@@ -1,60 +1,1830 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Saga</title>
-    <link rel="stylesheet" href="styles.css">
-    <script src="script.js" defer></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>News Saga</title>
+  <link rel="stylesheet" href="style.css" />
 </head>
-
 <body>
-    <nav>
-        <div class="main-nav container flex">
-            <a href="" class="company-logo">
-                <img src="./images/logo.png" alt="logo">
-            </a>
-            <div class="nav-links">
-                <ul class="flex">
-                    <li class="hover-link nav-item" id="india" onClick="onNavItemClick('india')">India</li>
-                    <li class="hover-link nav-item" id="cricket" onClick="onNavItemClick('cricket')">Cricket</li>
-                    <li class="hover-link nav-item" id="technology" onClick="onNavItemClick('technology')">Technology</li>
-                    <li class="hover-link nav-item" id="politics" onClick="onNavItemClick('politics')">Politics</li>
-                    <li class="hover-link nav-item" id="international" onClick="onNavItemClick('international')">International</li>
+  <nav>
+    <div class="main-nav container flex">
+      <a href="#" class="company-logo">
+        <img src="./images/logo.png" alt="logo" />
+      </a>
+      <div class="nav-links">
+        <ul class="flex">
+          <li class="hover-link nav-item" id="india" onclick="onNavItemClick('india')">India</li>
+          <li class="hover-link nav-item" id="cricket" onclick="onNavItemClick('cricket')">Cricket</li>
+          <li class="hover-link nav-item" id="technology" onclick="onNavItemClick('technology')">Technology</li>
+          <li class="hover-link nav-item" id="politics" onclick="onNavItemClick('politics')">Politics</li>
+          <li class="hover-link nav-item" id="international" onclick="onNavItemClick('international')">International</li>
+        </ul>
+      </div>
+      <div class="search-bar flex">
+        <input type="text" class="news-input" id="search-text" placeholder="e.g. Science" />
+        <button class="search-button" id="search-button">Search</button>
+      </div>
+    </div>
+  </nav>
 
-                </ul>
-            </div>
-            <div class="search-bar flex">
-                <input type="text" class="news-input" id="search-text" placeholder="e.g. Science">
-                <button class="search-button" id="search-button">Search</button>
-            </div>
-        </div>
-    </nav>
+  <main>
+    <div class="cards-container container flex" id="cardscontainer"></div>
+  </main>
+
+  <template id="template-news-card">
+    <div class="card">
+      <div class="card-header">
+        <img src="" alt="news image" id="news-img" />
+      </div>
+      <div class="card-content">
+        <h3 id="news-title"></h3>
+        <h6 class="news-source" id="news-source"></h6>
+        <p class="news-desc" id="news-desc"></p>
+      </div>
+    </div>
+  </template>
+
+  <script>
+    // Example static JSON data for Technology tab and a few others
+    const newsData = {
+      india: {
+        status: "ok",
+        totalResults: 2,
+        articles: [
+          {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Emma Roth",
+      "title": "Trump wants Apple to stop making more iPhones in India",
+      "description": "President Donald Trump told Apple CEO Tim Cook that he doesn’t want the company to move iPhone production to India. “I had a little problem with Tim Cook yesterday,” Trump said during his visit to Qatar. “You’re coming in with $500 billion, but now I hear you…",
+      "url": "https://www.theverge.com/news/667649/donald-trump-apple-stop-producing-iphones-india",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/03/STK466_ELECTION_2024_CVirginia_F.webp?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-05-15T14:18:30Z",
+      "content": "Were not interested in you building in India.\r\nWere not interested in you building in India.\r\nPresident Donald Trump told Apple CEO Tim Cook that he doesnt want the company to move iPhone production … [+814 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Emma Roth",
+      "title": "The US is reportedly encouraging countries to adopt Musk’s Starlink in tariff trade talks",
+      "description": "The US government is bringing up Starlink adoption in the midst of tariff trade talks with other countries, according to a report from The Washington Post. In recent weeks, several countries have moved forward with licensing the Elon Musk-owned satellite inte…",
+      "url": "https://www.theverge.com/news/663839/us-government-starlink-tariff-talks-elon-musk",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/STK022_ELON_MUSK_2_CVIRGINIA_D.jpg?quality=90&strip=all&crop=0%2C9.9676601489831%2C100%2C80.064679702034&w=1200",
+      "publishedAt": "2025-05-08T20:05:39Z",
+      "content": "India, Lesotho, Bangladesh, and other countries have moved forward with Starlink adoption in recent weeks.\r\nIndia, Lesotho, Bangladesh, and other countries have moved forward with Starlink adoption i… [+1997 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "UK and India agree landmark trade deal",
+      "description": "The deal will give better access for UK whisky and cars to the Indian market.",
+      "url": "https://www.bbc.com/news/articles/c5y6y90e5vzo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/1a2d/live/537ff930-6139-11ee-b101-6f93d6dfbcc2.png",
+      "publishedAt": "2025-05-06T13:18:11Z",
+      "content": "After three years of on-off negotiations, the UK and India have agreed a trade deal which will make it easier for UK firms to export whisky, cars and other products to India, and cut taxes on India's… [+1303 chars]"
+    },
+    {
+      "source": {
+        "id": "bbc-news",
+        "name": "BBC News"
+      },
+      "author": "https://www.facebook.com/bbcnews",
+      "title": "Why India and Pakistan fight over Kashmir",
+      "description": "They fought two wars over it and are nuclear armed - but what's at the root of the dispute?",
+      "url": "https://www.bbc.co.uk/news/10537286",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_news/1200/cpsprodpb/8B7A/production/_105660753_mediaitem105660752.jpg",
+      "publishedAt": "2025-05-07T07:05:20Z",
+      "content": "Within Kashmir, opinions about the territory's rightful allegiance are diverse and strongly held. Many do not want it to be governed by India, preferring either independence or union with Pakistan in… [+1595 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "India closes main border crossing with Pakistan after Kashmir attack",
+      "description": "India also cancels some visas held by Pakistanis and expels diplomats as tensions rise following the killing of tourists.",
+      "url": "https://www.bbc.com/news/articles/ce8g2njm2d2o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/b441/live/43013bc0-2067-11f0-9c65-a5c3dc449bf3.jpg",
+      "publishedAt": "2025-04-23T17:44:10Z",
+      "content": "India has announced measures targeting Pakistan, a day after 26 people were killed by gunmen in an attack in Indian-administered Kashmir. \r\nThey include the closure of the main border crossing linkin… [+2316 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Four days that took India and Pakistan to the brink",
+      "description": "The BBC visits families in Kashmir devastated by the deadliest clashes in years, and speaks to military insiders.",
+      "url": "https://www.bbc.com/news/articles/cvgvr4r5d2qo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/5fc3/live/9cd1ec80-326e-11f0-8519-3b5a01ebe413.png",
+      "publishedAt": "2025-05-18T00:08:56Z",
+      "content": "Farhat Javed in Pakistan-administered Kashmir &amp; Aamir Peerzada in India-administered Kashmir\r\nSixteen-year-old Nimra stood outside, rooted to the spot, as the Indian missiles that had woken her a… [+14711 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "Stephan Shemilt",
+      "title": "IPL suspended for one week over safety concerns",
+      "description": "The Indian Premier League is suspended for one week amid the ongoing tensions between India and neighbouring Pakistan.",
+      "url": "https://www.bbc.com/sport/cricket/articles/c753n4ngd0ko",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/eb7a/live/5c0f70d0-6139-11ee-ac8c-9d18dbc280ea.png",
+      "publishedAt": "2025-05-09T09:21:32Z",
+      "content": "The Indian Premier League has been suspended for one week amid the ongoing tensions between India and neighbouring Pakistan.\r\nOvernight, India accused Pakistan of attacking three of its military base… [+1786 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "US urges India and Pakistan to defuse tensions after Kashmir killings",
+      "description": "India accuses Pakistan of supporting militants behind the Kashmir attack, which Islamabad denies.",
+      "url": "https://www.bbc.com/news/articles/cvgnw9kydgqo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/d11a/live/809e3c80-2648-11f0-a2f4-51c368a7a800.jpg",
+      "publishedAt": "2025-05-01T07:51:50Z",
+      "content": "Nikita Yadav\r\nA paramilitary soldier stands guard at a busy street in Srinagar city\r\nThe US has urged India and Pakistan to work together to \"de-escalate tensions\" after a deadly militant attack in I… [+5397 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Despite the India-Pakistan ceasefire, these five measures remain",
+      "description": "India and Pakistan have ceased military hostilities, but diplomatic retaliatory measures remain in place.",
+      "url": "https://www.bbc.com/news/articles/c17r04qp4xdo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/4c45/live/23ec7480-2fcf-11f0-98b6-f3b9a866c26c.jpg",
+      "publishedAt": "2025-05-13T10:11:58Z",
+      "content": "Nikita Yadav\r\nIndia and Pakistan agreed to a ceasefire on Saturday\r\nDays after India and Pakistan agreed to a ceasefire, questions remain over what lies ahead for the two South Asian neighbours.\r\nEar… [+5790 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Jay Peters",
+      "title": "YouTube is experimenting with a Premium plan for two people",
+      "description": "YouTube is testing a YouTube Premium subscription plan designed for two people to use, Moneycontrol reports (via Android Authority). Company spokesperson Alex McQuiston confirmed to The Verge that the pilot is taking place in India, France, Taiwan, and Hong K…",
+      "url": "https://www.theverge.com/news/661462/youtube-premium-two-people-plan",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/03/acastro_STK092_04.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-05-05T20:09:45Z",
+      "content": "The plan would offer Premium benefits at a reduced cost.\r\nThe plan would offer Premium benefits at a reduced cost.\r\nYouTube is testing a YouTube Premium subscription plan designed for two people to u… [+1049 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "Matthew Henry",
+      "title": "PSL considering postponing rest of season",
+      "description": "The Pakistan Super League is considering postponing the remainder of its season amid the ongoing tensions between India and Pakistan.",
+      "url": "https://www.bbc.com/sport/cricket/articles/cr4z023edyko",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/df25/live/4a2103c0-2c0d-11f0-8da1-ad2bbee6cda5.jpg",
+      "publishedAt": "2025-05-08T17:27:22Z",
+      "content": "James Vince, Chris Jordan, Tom Curran, David Willey, Sam Billings, Luke Wood and Tom Kohler-Cadmore are the English players involved in the PSL, while there are also English coaches at various franch… [+2312 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "India worried about Chinese 'dumping' as trade tensions with Trump escalate",
+      "description": "Experts warn that a flood of cheap Chinese goods could hurt the competitiveness of Indian exports.",
+      "url": "https://www.bbc.com/news/articles/ckg5d505v8xo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/3ae2/live/92442840-2978-11f0-a23a-6f1ab69151cb.jpg",
+      "publishedAt": "2025-05-05T23:58:02Z",
+      "content": "Archana ShuklaIndia business correspondent\r\nCheaper Chinese imports have have slowed down demand for viscose yarn made in India\r\nThe pace at 64-year-old Thirunavkarsu's spinning mill in southern Indi… [+6418 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Chris Mason: Can UK-India trade deal mask Labour's problems at home?",
+      "description": "Labour says the deal has \"tangible benefits\", but it comes as the government faces heat at home.",
+      "url": "https://www.bbc.com/news/articles/cm2e2e5rp71o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/2e8b/live/138c4ef0-2acd-11f0-85c6-0f15ea8e6681.jpg",
+      "publishedAt": "2025-05-07T05:46:49Z",
+      "content": "Within moments of the briefing with the business secretary beginning, Jonathan Reynolds described it to us as a case study in the government's claim to be going further and faster in doing what it ca… [+2853 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Watch: Ground report from the site of air strikes in Pakistan's Muridke",
+      "description": "The building, which is located in a densely-populated area, remains cordoned off by security forces.",
+      "url": "https://www.bbc.com/news/videos/c9djd6442n1o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/5326/live/32ea1fb0-2b14-11f0-b26b-ab62c890638b.jpg",
+      "publishedAt": "2025-05-07T07:46:11Z",
+      "content": "BBC Urdu's Umer Draz Nangiana reports from outside a building complex in Pakistan's Muridke, which was targeted by India in its overnight air strikes. The building, which lies in a densely-populated … [+276 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "India and Pakistan accuse each other of 'violations' after ceasefire deal",
+      "description": "Delhi and Islamabad accused each other of breaching a ceasefire brokered after four days of cross-border attacks.",
+      "url": "https://www.bbc.com/news/articles/cvg9d913v20o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/2817/live/99e5c210-2dd9-11f0-8ff1-59f5dcf8e9f5.jpg",
+      "publishedAt": "2025-05-10T20:12:01Z",
+      "content": "India and Pakistan have accused each other of \"violations\" hours after the two nations said they had agreed to a ceasefire following days of cross-border military strikes.\r\nAfter sounds of explosions… [+4585 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Indian YouTuber arrested for allegedly 'spying' for Pakistan",
+      "description": "The father of Jyoti Malhotra, the Indian travel influencer, has denied allegations that she was a spy for Pakistan.",
+      "url": "https://www.bbc.com/news/articles/cx2e7xv8v80o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/75ad/live/92b3ddb0-3473-11f0-a52c-bfe6e86040d7.jpg",
+      "publishedAt": "2025-05-19T08:28:52Z",
+      "content": "Neyaz Farooquee\r\nPolice in India have arrested a local YouTuber on suspicions of spying for Pakistan.\r\nJyoti Malhotra, a travel influencer from the northern Indian state of Haryana, allegedly travell… [+2988 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "NPR"
+      },
+      "author": "NPR Staff",
+      "title": "India launches missile attacks on Pakistan",
+      "description": "India has launched strikes in several parts of Pakistan and Pakistan-controlled territory, in a dramatic escalation of tensions between the two nuclear-armed rivals.",
+      "url": "https://www.npr.org/2025/05/06/nx-s1-5388952/india-attacks-pakistan",
+      "urlToImage": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/1985x1117+0+103/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F10%2F68%2F99f79e1f40c6b0a8685ce22dc357%2F2025-05-06t210308z-479746301-rc2lceaip5gc-rtrmadp-3-india-pakistan.JPG",
+      "publishedAt": "2025-05-06T21:14:13Z",
+      "content": "India has launched strikes in several parts of Pakistan and Pakistan-controlled territory, in a dramatic escalation of tensions between the two nuclear-armed rivals.\r\nIn an assault India dubbed \"Oper… [+647 chars]"
+    },
+
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Watch: Aftermath of strikes in Pakistani-administered Kashmir",
+      "description": "Footage obtained by Associated Press shows rubble and destruction thought to be in Muzaffarabad.",
+      "url": "https://www.bbc.com/news/videos/c9veveg1dzjo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/a150/live/0a1656a0-2ac7-11f0-8f57-b7237f6a66e6.jpg",
+      "publishedAt": "2025-05-06T22:12:24Z",
+      "content": "India says it has launched strikes on Pakistan-administered Kashmir. \r\nThe BBC has not yet been able to identify the locations hit. Relations between the two countries have declined sharply following… [+214 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "NPR"
+      },
+      "author": "Diaa Hadid",
+      "title": "India-Pakistan tensions escalate after deadly Kashmir attack",
+      "description": "A day after India suspended a water-sharing treaty and downgraded diplomatic ties with Pakistan, authorities in Islamabad closed airspace to Indian aircraft and suspended all trade with India.",
+      "url": "https://www.npr.org/2025/04/24/g-s1-62469/india-pakistan-kashmir-attack-tensions",
+      "urlToImage": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/4155x2337+0+216/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F74%2Fd3%2F6b28e43c4680aaea5bb38cbe640f%2Fgettyimages-2211089200.jpg",
+      "publishedAt": "2025-04-24T17:26:55Z",
+      "content": "MUMBAI Tensions between South Asia's two nuclear-armed powers ratcheted up Thursday after India's Prime Minister Narendra Modi vowed to pursue \"to the ends of the earth\" those behind a militant attac… [+4975 chars]"
+    },
+    
+
+        ],
+      },
+      
+      
+      
+      
+      
+      technology: {
+        status: "ok",
+        totalResults: 2,
+        articles: [
+          {
+      "source": {
+        "id": "wired",
+        "name": "Wired"
+      },
+      "author": "Umair Irfan",
+      "title": "Grid-Scale Battery Storage Is Quietly Revolutionizing the Energy System",
+      "description": "This energy storage technology is harnessing the potential of solar and wind power—and its deployment is growing exponentially.",
+      "url": "https://www.wired.com/story/grid-scale-battery-storage-is-quietly-revolutionizing-the-energy-system/",
+      "urlToImage": "https://media.wired.com/photos/680b674372d2c2d598e6ca3c/191:100/w_1280,c_limit/GettyImages-1244067209.jpg",
+      "publishedAt": "2025-04-26T11:00:00Z",
+      "content": "Grid batteries have a halo effect for other power generators too. Most thermal power plantscoal, gas, nuclearprefer to run at a steady pace. Ramping up and down to match demand takes time and costs m… [+4011 chars]"
+    },
+    {
+      "source": {
+        "id": "wired",
+        "name": "Wired"
+      },
+      "author": "Simon Hill",
+      "title": "Silence Speaks Has Created AI-Powered Signing Avatars for the Deaf",
+      "description": "New technology from British startup Silence Speaks enables an AI-generated sign language avatar to effectively give the deaf and hard of hearing an interpreter in their pocket.",
+      "url": "https://www.wired.com/story/silence-speaks-deaf-ai-signing/",
+      "urlToImage": "https://media.wired.com/photos/681abcd387ff30a789e93288/191:100/w_1280,c_limit/AI-Powered-Signing-Avatars-for-the-Deaf_052025_Lede.jpg",
+      "publishedAt": "2025-05-07T13:39:49Z",
+      "content": "After a rethink, Madduru and his team approached the problem differently, developing technology capable of translating text into BSL and ASL. The current version runs in the cloud and takes time to g… [+2550 chars]"
+    },
+    {
+      "source": {
+        "id": "wired",
+        "name": "Wired"
+      },
+      "author": "Caroline Haskins",
+      "title": "US Border Agents Are Asking for Help Taking Photos of Everyone Entering the Country by Car",
+      "description": "Customs and Border Protection has called for tech companies to pitch real-time face recognition technology that can capture everyone in a vehicle—not just those in the front seats.",
+      "url": "https://www.wired.com/story/cbp-photo-everyone-in-vehicle-us-border/",
+      "urlToImage": "https://media.wired.com/photos/68129ee68756b2b4fe463741/191:100/w_1280,c_limit/security_facial_border_getty.jpg",
+      "publishedAt": "2025-05-06T09:00:00Z",
+      "content": "United States Customs and Border Protection is asking tech companies to send pitches for a real-time facial recognition tool that would take photos of every single person in a vehicle at a border cro… [+3025 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Gizmodo.com"
+      },
+      "author": "Passant Rabie",
+      "title": "Firefly’s Alpha Rocket Crashes Into Pacific Ocean After Failing to Reach Orbit",
+      "description": "The failure resulted in the loss of a Lockheed Martin technology demonstration satellite.",
+      "url": "https://gizmodo.com/fireflys-alpha-rocket-crashes-into-pacific-ocean-after-failing-to-reach-orbit-2000596376",
+      "urlToImage": "https://gizmodo.com/app/uploads/2025/04/alpha-rocket-launch.jpeg",
+      "publishedAt": "2025-04-30T17:05:36Z",
+      "content": "A Firefly Aerospace rocket failed to deliver its payload to orbit on Tuesday, creating a cloud of debris in the sky before falling back down toward an ocean crash.\r\nFirefly launched its Alpha rocket … [+2327 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Gizmodo.com"
+      },
+      "author": "Isaac Schultz",
+      "title": "AI Is Deciphering Animal Speech. Should We Try to Talk Back?",
+      "description": "As scientists use machine learning to decode the sounds of whales, dogs, and dolphins, opinions vary on how best to deploy the technology.",
+      "url": "https://gizmodo.com/ai-is-deciphering-animal-speech-should-we-try-to-talk-back-2000598783",
+      "urlToImage": "https://gizmodo.com/app/uploads/2025/05/AI-Talk-Decipher-Animal-Speech.jpg",
+      "publishedAt": "2025-05-17T10:00:59Z",
+      "content": "Chirps, trills, growls, howls, squawks. Animals converse in all kinds of ways, yet humankind has only scratched the surface of how they communicate with each other and the rest of the living world. O… [+10473 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Andrew Liszewski",
+      "title": "Audible is giving publishers AI tools to quickly make more audiobooks",
+      "description": "Amazon’s Audible has announced that it’s planning to expand its audiobook catalog by giving select publishers access to its new “fully integrated, end-to-end AI production technology” that will let them more easily convert titles to audiobooks with their choi…",
+      "url": "https://www.theverge.com/news/666136/amazon-audible-ai-narration-audiobooks-translation",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/24000004/acastro_STK074_audible_04.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-05-13T18:18:08Z",
+      "content": "Publishers will be able to choose from over 100 AI-generated voices in English, Spanish, Italian, and French.\r\nPublishers will be able to choose from over 100 AI-generated voices in English, Spanish,… [+2307 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Nilay Patel",
+      "title": "Workday’s new head of product wants you to like Workday as much as he does",
+      "description": "Today, I’m talking with Gerrit Kazmaier, the new president of product and technology at Workday, an enterprise software company. Decoder listeners probably know the name Workday; a lot of companies use its platform for HR and finance management, which the sui…",
+      "url": "https://www.theverge.com/decoder-podcast-with-nilay-patel/667538/workday-gerrit-kazmaier-enterprise-software-ai-interview",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/DCD_Workday.png?quality=90&strip=all&crop=0%2C10.711631919237%2C100%2C78.576736161526&w=1200",
+      "publishedAt": "2025-05-15T15:34:31Z",
+      "content": "Today, I’m talking with Gerrit Kazmaier, the new president of product and technology at Workday, an enterprise software company. Decoder listeners probably know the name Workday; a lot of companies u… [+65032 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Andrew Liszewski",
+      "title": "These wireless headphones have ‘80s Sony Walkman vibes",
+      "description": "Headphones had existed for well over 50 years by the time Sony’s Walkman debuted in 1979, but the portable cassette player helped popularize the technology by miniaturizing it. km5’s new Lightwear Headphones Hp1 feature a minimal design similar to the one shi…",
+      "url": "https://www.theverge.com/news/657273/km5-lightwear-wireless-headphones-hp1-sony-walkman",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/04/km5_hp1_2.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-04-28T16:46:04Z",
+      "content": "The km5 Lightwear Headphones Hp1 pair a lightweight retro design with modern functionality.\r\nThe km5 Lightwear Headphones Hp1 pair a lightweight retro design with modern functionality.\r\nHeadphones ha… [+1746 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Jay Peters",
+      "title": "EA is bringing employees back to the office three days per week",
+      "description": "EA is asking employees to return to the office for three days per week under a hybrid model – and it sounds like the company will be significantly reducing remote hiring. CEO Andrew Wilson and president of EA Entertainment and technology Laura Miele sent emai…",
+      "url": "https://www.theverge.com/news/667441/ea-return-to-office-work-hybrid",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/ss_c8460408705b54e37228cc320a2da1c19e4dc12f.jpg?quality=90&strip=all&crop=0%2C3.4613147178592%2C100%2C93.077370564282&w=1200",
+      "publishedAt": "2025-05-14T23:33:38Z",
+      "content": "Future remote hiring will require executive approval.\r\nFuture remote hiring will require executive approval.\r\nEA is asking employees to return to the office for three days per week under a hybrid mod… [+1495 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Andrew J. Hawkins",
+      "title": "Waymo says it will add 2,000 more robotaxis in 2026",
+      "description": "Waymo said it recently received its last delivery of Jaguar I-Pace SUVs, which will be retrofitted with sensors and autonomous driving technology at its factory in Arizona, before joining its robotaxi fleet. In a blog post published today, the Alphabet compan…",
+      "url": "https://www.theverge.com/news/661025/waymo-fleet-size-factory-arizona-jaguar-robotaxi-zeekr",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/Waymo_General_Assembly.webp?quality=90&strip=all&crop=0%2C3.4613147178592%2C100%2C93.077370564282&w=1200",
+      "publishedAt": "2025-05-05T15:10:23Z",
+      "content": "The company provides a rare glimpse into its fleet size as it gears up to introduce new vehicle models.\r\nThe company provides a rare glimpse into its fleet size as it gears up to introduce new vehicl… [+3055 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Sheena Vasani",
+      "title": "The Kindle Colorsoft, Amazon’s first color e-reader, is $55 off",
+      "description": "Built with E Ink’s color display technology, the Kindle Colorsoft Signature Edition brings comics, magazines, children’s books, and illustrated novels to life in a way a regular Kindle can’t. And right now, you can buy the company’s first color e-reader at Am…",
+      "url": "https://www.theverge.com/tech/653291/kindle-colorsoft-signature-edition-amazon-book-sale-2025-deal",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/chorus/uploads/chorus_asset/file/25749700/amazon_kindle_colorsoft_18.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-04-23T13:50:38Z",
+      "content": "The Colorsoft is a far better value at this price, especially if you own a lot of Kindle books. \r\nThe Colorsoft is a far better value at this price, especially if you own a lot of Kindle books. \r\nBui… [+1349 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Andrew J. Hawkins",
+      "title": "GM says new battery chemistry will enable 400-mile range EVs",
+      "description": "General Motors is teaming up with LG to develop lithium manganese-rich (LMR) batteries for its electric trucks and SUVs. The automaker says that the new chemistry is safer, more energy dense, and less costly than the current technology.  GM aims to become the…",
+      "url": "https://www.theverge.com/news/665223/gm-lmr-ev-battery-chemistry-range-miles",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/gettyimages-1237977311.jpg?quality=90&strip=all&crop=0%2C10.737892056687%2C100%2C78.524215886627&w=1200",
+      "publishedAt": "2025-05-12T22:16:16Z",
+      "content": "The automaker is pairing up with LG to develop lithium manganese-rich prismatic cells for its future electric trucks and SUVs. \r\nThe automaker is pairing up with LG to develop lithium manganese-rich … [+3974 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Android Central"
+      },
+      "author": "ted@byteddyk.com (Ted Kritsonis)",
+      "title": "Beyond LCD: Exploring TCL's Unique NXTPAPER Technology",
+      "description": "TCL continues to develop its NXTPAPER screen technology to combat both blue light exposure and present a paper-like finish.",
+      "url": "https://www.androidcentral.com/tablets/exploring-tcl-nxtpaper-display-tech",
+      "urlToImage": "https://cdn.mos.cms.futurecdn.net/udtW2jKUy3ErBLvcjWU4Xh.jpg",
+      "publishedAt": "2025-04-30T10:00:00Z",
+      "content": "TCL aims to strike a balance with its unique NXTPAPER technology. It’s not an E Ink display the likes of which you see on eReaders, nor is it the same as standard OLED or LCD panels we’ve come to kno… [+7194 chars]"
+    },
+    {
+      "source": {
+        "id": "wired",
+        "name": "Wired"
+      },
+      "author": "Jorge Garay",
+      "title": "The Tech That Safeguards the Conclave’s Secrecy",
+      "description": "Following the death of Pope Francis, the Vatican is preparing to organize a new conclave in less than 20 days. This is how they’ll tamp down on leaks.",
+      "url": "https://www.wired.com/story/technology-used-to-shield-conclave-pope-francis/",
+      "urlToImage": "https://media.wired.com/photos/6807a32fd9e964025d33ff7c/191:100/w_1280,c_limit/GettyImages-163555711.jpg",
+      "publishedAt": "2025-04-23T06:00:00Z",
+      "content": "In 2005, cell phones were banned for the first time during the conclave, the process by which the Catholic Church elects its new pope. Twenty years later, after the death of Pope Francis, the electio… [+3441 chars]"
+    },
+    {
+      "source": {
+        "id": "wired",
+        "name": "Wired"
+      },
+      "author": "Will Knight",
+      "title": "The Middle East Has Entered the AI Group Chat",
+      "description": "The UAE and Saudi Arabia are investing billions in US AI infrastructure. The deals could help the US in the AI race against China.",
+      "url": "https://www.wired.com/story/trump-middle-east-artificial-intelligence-investments/",
+      "urlToImage": "https://media.wired.com/photos/68264e138a1cb0e8abc2b33c/191:100/w_1280,c_limit/Saudi-AI-Race-Business-2214388798.jpg",
+      "publishedAt": "2025-05-15T21:08:02Z",
+      "content": "Donald Trumps jaunt to the Middle East featured an entourage of billionaire tech bros, a fighter-jet escort, and business deals designed to reshape the global landscape of artificial intelligence.\r\nO… [+3749 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "MacRumors"
+      },
+      "author": "Juli Clover",
+      "title": "Apple Releases Safari Technology Preview 218 With Bug Fixes and Performance Improvements",
+      "description": "Apple today released a new update for Safari Technology Preview, the experimental browser that was first introduced in March 2016. Apple designed ‌Safari Technology Preview‌ to allow users to test features that are planned for future release versions of the S…",
+      "url": "https://www.macrumors.com/2025/04/30/apple-releases-safari-technology-preview-218/",
+      "urlToImage": "https://images.macrumors.com/t/gSfA9gdPJTtAYv_7hjK9YByevcM=/2500x/article-new/2024/07/Safari-Technology-Preview-Updated-Feature-1.jpg",
+      "publishedAt": "2025-04-30T22:14:14Z",
+      "content": "Apple today released a new update for Safari Technology Preview, the experimental browser that was first introduced in March 2016. Apple designed ‌Safari Technology Preview‌ to allow users to test fe… [+985 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "MacRumors"
+      },
+      "author": "Juli Clover",
+      "title": "Apple Releases Safari Technology Preview 219 With Bug Fixes and Performance Improvements",
+      "description": "Apple today released a new update for Safari Technology Preview, the experimental browser that was first introduced in March 2016. Apple designed ‌Safari Technology Preview‌ to allow users to test features that are planned for future release versions of the S…",
+      "url": "https://www.macrumors.com/2025/05/14/apple-releases-safari-technology-preview-219/",
+      "urlToImage": "https://images.macrumors.com/t/gSfA9gdPJTtAYv_7hjK9YByevcM=/2500x/article-new/2024/07/Safari-Technology-Preview-Updated-Feature-1.jpg",
+      "publishedAt": "2025-05-14T21:48:08Z",
+      "content": "Apple today released a new update for Safari Technology Preview, the experimental browser that was first introduced in March 2016. Apple designed ‌Safari Technology Preview‌ to allow users to test fe… [+964 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "CNET"
+      },
+      "author": "Bree Fowler",
+      "title": "World Password Day: Why Haven't We Ditched This Crackable Tech?",
+      "description": "There's new and better technology out there, but passwords just won't go away.",
+      "url": "https://www.cnet.com/tech/services-and-software/world-password-day-why-havent-we-ditched-this-crackable-tech/",
+      "urlToImage": "https://www.cnet.com/a/img/resize/21d8deacd9045990811e4937a452243a66bf0ec7/hub/2020/03/07/0e781928-34b8-4662-8d48-16298276688a/password-frustration-image-1600x900.jpg?auto=webp&fit=crop&height=675&width=1200",
+      "publishedAt": "2025-05-01T11:30:03Z",
+      "content": "Happy World Password Day. It's 2025 and much to the ire of security experts and regular people alike, we're still using passwords.\r\nPasswords are a pain to remember and enter every time you log into … [+5938 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Andrew J. Hawkins",
+      "title": "Tesla won’t have to report as many Level 2 crashes after Trump’s rule change",
+      "description": "Last week, the US Department of Transportation announced a major change to the Biden-era rule that requires automakers and tech companies to report crashes that involve fully or partially autonomous vehicles. Under the revised rules, companies will no longer …",
+      "url": "https://www.theverge.com/news/657859/tesla-adas-crash-report-nhtsa-sgo-trump-musk",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/03/GettyImages-2204586440.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-04-29T18:33:52Z",
+      "content": "Tesla represents the bulk of the Level 2 automated crashes to the federal government. But the Trump administration wants to lighten that load.\r\nTesla represents the bulk of the Level 2 automated cras… [+3850 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Andrew J. Hawkins",
+      "title": "Aurora’s driverless trucks are making deliveries in Texas",
+      "description": "After years of testing and validation, Aurora says its first fully autonomous tractor-trailers are operating on public highways in Texas. The company’s Class 8 trucks are now making customer deliveries between Dallas and Houston, having already completed 1,20…",
+      "url": "https://www.theverge.com/news/659518/aurora-autonomous-truck-first-delivery-texas",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/Aurora-Launch-7.jpg?quality=90&strip=all&crop=0%2C3.4622529978044%2C100%2C93.075494004391&w=1200",
+      "publishedAt": "2025-05-01T20:19:51Z",
+      "content": "After a slight delay, the companys autonomous trucks are finally hauling freight.\r\nAfter a slight delay, the companys autonomous trucks are finally hauling freight.\r\nAfter years of testing and valida… [+3216 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Melia Russell",
+      "title": "Meet the new legal startup that Alex Spiro and Goodwin's top deals partner are betting on",
+      "description": "Marveri says that it's building technology that's creating faster and more accurate corporate diligence.",
+      "url": "https://www.businessinsider.com/legal-ai-startup-marveri-secures-vc-funding-fix-due-diligence-2025-5",
+      "urlToImage": "https://i.insider.com/68151ad6c6ad288d147fe6c7?width=1200&format=jpeg",
+      "publishedAt": "2025-05-05T09:01:01Z",
+      "content": "Marveri cofounders Connor Acle and Emily Mu.Marveri\r\n<ul><li>Marveri has emerged from stealth and secured $3.2 million to revamp corporate due diligence.</li><li>The company aims to streamline docume… [+3213 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Andrew Liszewski",
+      "title": "Plugable’s new dock supports five displays from one USB-C port",
+      "description": "Plugable has announced a new docking solution for Windows and Mac users that supports up to five simultaneous displays, including a mix of 4K and 8K. The new $279.95 UD-7400PD dock actually supports more displays than the pricier Thunderbolt 5 docks that have…",
+      "url": "https://www.theverge.com/news/667072/plugable-displaylink-dock-ud-7400pd",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/plugable4.jpg?quality=90&strip=all&crop=0,10.712939874762,100,78.574120250475",
+      "publishedAt": "2025-05-14T17:43:45Z",
+      "content": "Boost your productivity with four 4K screens and an additional 8K display.\r\nBoost your productivity with four 4K screens and an additional 8K display.\r\nPlugable has announced a new docking solution f… [+2397 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Dominic Preston",
+      "title": "Pinterest is prompting teens to close the app at school",
+      "description": "Pinterest is testing a new pop-up prompt it will display to minors in the US and Canada during school hours, encouraging them to close the app and turn off notifications until the end of the day. “Focus is a beautiful thing,” the prompt says. “Stay in the mom…",
+      "url": "https://www.theverge.com/news/653094/pinterest-school-hours-prompt-minors-focus",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/04/acastro_200902_1777_pinterest_0001.webp?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-04-22T09:36:33Z",
+      "content": "Minors will be encouraged to stay in the moment and shut Pinterest until the end of the school day.\r\nMinors will be encouraged to stay in the moment and shut Pinterest until the end of the school day… [+1837 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Tom Warren, Jess Weatherbed",
+      "title": "The EU isn’t happy with Apple’s tax on alternative app stores",
+      "description": "The European Commission has just issued its first Digital Markets Act (DMA) fines to Apple and Meta, and now it’s telling Apple that it’s not impressed with the company’s approach to alternative app stores. The DMA originally forced Apple to begrudgingly allo…",
+      "url": "https://www.theverge.com/news/636196/apple-eu-dma-probe-alternative-app-stores-tax",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/03/STK450_EU_G-1.jpg?quality=90&strip=all&crop=0%2C9.9676601489831%2C100%2C80.064679702034&w=1200",
+      "publishedAt": "2025-04-23T11:30:48Z",
+      "content": "The European Commission has also closed its investigation into the iPhones browser choice screen.\r\nThe European Commission has also closed its investigation into the iPhones browser choice screen.\r\nT… [+2572 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Android Central"
+      },
+      "author": "vishnu.skar@gmail.com (Vishnu Sarangapurkar)",
+      "title": "OnePlus 13T will be the \"first and only\" to sport a massive battery, company confirms",
+      "description": "The OnePlus 13T is now confirmed to have a massive 6260mAh battery despite its compact size, thanks to OnePlus' new Glacier battery technology.",
+      "url": "https://www.androidcentral.com/phones/oneplus/oneplus-13t-to-sport-a-gigantic-battery-in-its-smaller-form-factor",
+      "urlToImage": "https://cdn.mos.cms.futurecdn.net/QsMnzMRqzmrxKuykCNMoAD.jpg",
+      "publishedAt": "2025-04-21T18:42:48Z",
+      "content": "What you need to know\r\n<ul><li>OnePlus 13T is gearing up to release this week with a massive 6260mAh battery.</li><li>The device, despite being a slimmer form factor, incorporates such a huge battery… [+2498 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "CNET"
+      },
+      "author": "David Anders",
+      "title": "There Are 6 Internet Connection Types to Get Online. Here’s What You Need to Know",
+      "description": "Learn about how different types of internet connections work, from Fiber and DSL to Satellite and Cable. Review technology, speeds, providers and more on CNET.",
+      "url": "https://www.cnet.com/home/internet/what-are-the-different-internet-connection-types/",
+      "urlToImage": "https://www.cnet.com/a/img/resize/046eee00729029539a267cadfe28282542f518b4/hub/2024/10/21/9b51525f-b1fc-485d-8ace-4da576c56dc7/gettyimages-1306156001.jpg?auto=webp&fit=crop&height=675&width=1200",
+      "publishedAt": "2025-04-23T21:31:00Z",
+      "content": "Choosing the right internet connection type for home broadband consumers can make a huge difference. This decision determines the quality (and satisfaction) of your home internet and can also help yo… [+14927 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Tim Paradis",
+      "title": "Paid leave, bonuses, and 401(k)s: How some restaurants are tackling staffing shortages",
+      "description": "Some restaurant operators are using a mix of benefits, training, technology, and flexibility to try to attract and retain workers.",
+      "url": "https://www.businessinsider.com/restaurants-taking-steps-to-attract-and-keep-workers-hiring-2025-5",
+      "urlToImage": "https://i.insider.com/681cfe8ec6ad288d14806b6c?width=1200&format=jpeg",
+      "publishedAt": "2025-05-16T19:22:06Z",
+      "content": "Staffing in restaurants has long been a challenge. Now, some operators are trying various approaches to attract and retain workers.Amy Lombard for BI\r\nWhen Laurie Schive and her husband opened Blue L… [+8414 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Sponsor Post",
+      "title": "The secret to successful AI in hiring? Stop overthinking it",
+      "description": "Here's what talent leaders actually need to know about today's rapidly evolving technology and how to use it.",
+      "url": "https://www.businessinsider.com/sc/how-to-stop-worrying-about-ai",
+      "urlToImage": "https://i.insider.com/68137e67a466d2b74ab4b563?width=1000&format=jpeg",
+      "publishedAt": "2025-05-01T16:01:00Z",
+      "content": "Courtesy of Indeed\r\nGood news for any talent leaders feeling overwhelmed by AI's developmental onslaught: \"If they're reading this article, they shouldn't worry,\" Trey Causey, Indeed head of Responsi… [+6693 chars]"
+    },
+
+        ],
+      },
 
 
-    <main>
-        <div class="cards-container container flex" id="cardscontainer">
 
 
 
-        </div>
-    </main>
+      international: {
+        status: "ok",
+        totalResults: 2,
+        articles: [
+          {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Umar Shakir",
+      "title": "DHL halts international deliveries to US consumers worth over $800",
+      "description": "International shipping company DHL is temporarily suspending packages bound for consumers in the US that are valued at over $800 “until further notice.” The BBC reports that DHL was hit with a surge in formal customs clearances due to the Trump Administration…",
+      "url": "https://www.theverge.com/news/652977/dhl-shipment-delays-us-tariffs-business-to-consumer",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/04/STKS488_TARIFFS_4_CVirginia_A.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-04-21T22:26:20Z",
+      "content": "Dropping the bar requiring formal clearances from $2,500 to $800 is causing multi-day transit delays.\r\nDropping the bar requiring formal clearances from $2,500 to $800 is causing multi-day transit de… [+1537 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Gizmodo.com"
+      },
+      "author": "Sabina Graves",
+      "title": "DC Studios’ Superman Will Soar Globally After Warner Bros. Legal Win",
+      "description": "Fear not, international fans: the James Gunn-helmed movie will indeed open July 11.",
+      "url": "https://gizmodo.com/dc-studios-superman-will-soar-globally-after-warner-bros-legal-win-2000594667",
+      "urlToImage": "https://gizmodo.com/app/uploads/2025/04/superman-dc-studios.jpg",
+      "publishedAt": "2025-04-25T22:00:08Z",
+      "content": "A lawsuit brought by the estate of Superman co-creator Joseph Schuster which attempted to block the film’s release in Australia, Canada, Ireland, and the United Kingdomthanks to an old law kink that … [+1618 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Gizmodo.com"
+      },
+      "author": "Margherita Bassi",
+      "title": "Video Shows Orcas Left Behind in Algae-Filled Tanks Months After French Park Shut Down",
+      "description": "Animal welfare organization TideBreakers is calling for international action, warning that a killer whale mother and her calf could be euthanized.",
+      "url": "https://gizmodo.com/video-shows-orcas-left-behind-in-algae-filled-tanks-months-after-french-park-shut-down-2000604671",
+      "urlToImage": "https://gizmodo.com/app/uploads/2025/05/orcas-in-marineland.jpg",
+      "publishedAt": "2025-05-20T15:25:50Z",
+      "content": "In November 2021, the French government passed legislation banning the performance of cetaceans, including whales and dolphins. In anticipation of the law coming into effect late next year, the Frenc… [+3456 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Denying food to Gaza is 'weapon of war', says UN refugee agency head",
+      "description": "The BBC's international editor Jeremy Bowen speaks to the head of the UN agency that supports Palestinian refugees.",
+      "url": "https://www.bbc.com/news/articles/cx27dzv7znpo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/523f/live/5e7953f0-2fae-11f0-b26b-ab62c890638b.jpg",
+      "publishedAt": "2025-05-13T05:00:42Z",
+      "content": "Jeremy BowenInternational editor, BBC News\r\nWatch: Jeremy Bowen questions Unrwa commissioner on food aid in Gaza\r\nHow do you measure misery? For journalists the usual way is to see it, to feel it, to… [+11639 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "BBC Sport",
+      "title": "Former South Africa winger Hendricks dies aged 37",
+      "description": "Former South Africa international Cornal Hendricks dies aged 37 after suffering a heart attack.",
+      "url": "https://www.bbc.com/sport/rugby-union/articles/cgq300jnylzo",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/f1ce/live/fdb47520-3167-11f0-82b3-45d77a1f0e13.jpg",
+      "publishedAt": "2025-05-15T09:05:23Z",
+      "content": "Former South Africa international Cornal Hendricks has died aged 37 after suffering a heart attack.\r\nHendricks, who scored five tries in 12 appearances for the Springboks, died on Wednesday.\r\nThe win… [+1480 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Home needed for two killer whales stuck in shuttered zoo",
+      "description": "An international search is under way for a suitable home for the orcas stranded in France.",
+      "url": "https://www.bbc.com/news/articles/cpdzpzy1jwzo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/b14f/live/7b9993a0-22b6-11f0-9a6d-939f656e85b8.jpg",
+      "publishedAt": "2025-04-27T00:28:15Z",
+      "content": "George Sandeman and Giulia Imbert\r\nWikie, swimming with her calf in 2011, needs to be moved out of Marineland Antibes\r\nThe French government has been urged to reconsider rehoming two stranded killer … [+4996 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Wes Davis",
+      "title": "Trump’s 2026 NASA budget would slash ISS crew and allocate more money for Elon",
+      "description": "The Trump administration has released a proposal to cut about a quarter of NASA’s 2026 budget, slashing both International Space Station crew sizes and the amount of research done there. At the same time, it sets up new funding that would likely benefit Elon …",
+      "url": "https://www.theverge.com/news/660721/trump-2026-nasa-budget-cuts",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/International-Space-Station.png?quality=90&strip=all&crop=0%2C10.723165084465%2C100%2C78.55366983107&w=1200",
+      "publishedAt": "2025-05-03T17:24:25Z",
+      "content": "The Presidents priorities are apparent in his proposal to cut about a quarter of NASAs 2026 budget.\r\nThe Presidents priorities are apparent in his proposal to cut about a quarter of NASAs 2026 budget… [+2295 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Justine Calma",
+      "title": "USAID decides not to collect former workers’ abandoned devices",
+      "description": "After stranding former US Agency for International Development (USAID) workers with devices holding sensitive information, the Trump administration says it will no longer physically collect their government-issued phones, laptops, and tablets. An email sent b…",
+      "url": "https://www.theverge.com/news/656626/usaid-terminated-workers-devices-phone-laptop-ipad",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/04/gettyimages-2207466509.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-04-25T21:01:50Z",
+      "content": "The entrance to the now shuttered USAID office can be seen as black plastic covers a USAID sign at the Ronald Reagan Building and International Trade Center in Washington, DC on April 1, 2025. | Phot… [+3609 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Jeremy Bowen: Netanyahu's plan for Gaza risks dividing Israel, killing Palestinians and horrifying world",
+      "description": "The offensive to take and hold territory will sharpen everything that makes this war so controversial, writes the BBC's International Editor.",
+      "url": "https://www.bbc.com/news/articles/cd020j97l79o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/9133/live/5253a6f0-2ab0-11f0-b815-6b3bed81224c.jpg",
+      "publishedAt": "2025-05-06T19:40:40Z",
+      "content": "Jeremy BowenInternational Editor, BBC News\r\nIsrael's army plans to capture and hold territory\r\nIsrael's Prime Minister Benjamin Netanyahu has told Israelis that \"we are on the eve of an intense entry… [+7662 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Erica Star Domena,Daniel T. Allen,Rachel Cohn",
+      "title": "Companies use Trump's executive order as a loophole to fast-track commercial seafloor mining",
+      "description": "Donald Trump's executive order circumvents the International Seabed Authority's control of international waters. Mining companies are seizing the moment, while activists believe they'll pollute the ocean.",
+      "url": "https://www.businessinsider.com/companies-use-trumps-executive-order-loophole-fast-track-seafloor-mining-2025-4",
+      "urlToImage": "https://i.insider.com/681133a3a466d2b74ab48220?width=1200&format=jpeg",
+      "publishedAt": "2025-04-29T20:25:47Z",
+      "content": "Donald Trump's executive order circumvents the International Seabed Authority's control of international waters. Mining companies are seizing the moment, while activists believe they'll pollute the o… [+49 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "NPR"
+      },
+      "author": "Adrian Florido",
+      "title": "Government says - for now - it will restore international students' status",
+      "description": "International students had filed dozens of lawsuits after the government removed them from a database crucial for maintaining their legal status.",
+      "url": "https://www.npr.org/2025/04/25/nx-s1-5377610/government-says-for-now-it-will-restore-international-students-status",
+      "urlToImage": "https://media.npr.org/include/images/facebook-default-wide-s1400-c100.jpg",
+      "publishedAt": "2025-04-25T21:56:50Z",
+      "content": "In a major reversal, the federal government is restoring the records of hundreds, and possibly thousands, of international students whose entries in a crucial database the government had abruptly ter… [+2860 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "NPR"
+      },
+      "author": "Joel Rose",
+      "title": "Minor infractions lead to big problems for international students",
+      "description": "After weeks of confusion, the Trump administration confirmed that it terminated visa records for thousands of international students because of past brushes with law enforcement, many of them minor.",
+      "url": "https://www.npr.org/2025/05/05/g-s1-64338/minor-infractions-lead-to-big-problems-for-international-students",
+      "urlToImage": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/4064x2286+0+402/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F2a%2F99%2F8b0572ed462a9e3aa78eadcbc5a6%2Fap090529017353.jpg",
+      "publishedAt": "2025-05-05T20:08:47Z",
+      "content": "Thousands of international students found their lives thrown into chaos in recent weeks by a Trump administration effort to flag their past brushes with law enforcement that left them unable to work … [+8519 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Pete Syme",
+      "title": "Southwest wants permission to launch more international flights",
+      "description": "Southwest Airlines on Tuesday asked the Transportation Department for permission to fly to any country with which the US has an Open Skies treaty.",
+      "url": "https://www.businessinsider.com/southwest-signals-gearing-up-for-more-international-flights-2025-5",
+      "urlToImage": "https://i.insider.com/682486cbc6ad288d1480dffc?width=1200&format=jpeg",
+      "publishedAt": "2025-05-14T13:13:00Z",
+      "content": "Southwest Airlines wants permission to fly to over 100 countries.Mike Blake/REUTERS\r\n<ul><li>Southwest asked the Department of Transportation for permission to fly to more than 100 countries.</li><li… [+2888 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "NPR"
+      },
+      "author": "The Associated Press",
+      "title": "A dozen states sue the Trump administration to stop tariff policy",
+      "description": "A dozen states have sued the Trump administration in the U.S. Court of International Trade to stop its tariff policy, challenging Trump's claim that he could arbitrarily impose tariffs based on the International Emergency Economic Powers Act.",
+      "url": "https://www.npr.org/2025/04/23/g-s1-62417/trump-tariff-lawsuits-states",
+      "urlToImage": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/3401x1912+0+10/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2F84%2F6e%2Fef19900e440f8a1834cc6233e6f9%2Fap25108762040202.jpg",
+      "publishedAt": "2025-04-23T23:07:16Z",
+      "content": "NEW YORK A dozen states sued the Trump administration in the U.S. Court of International Trade in New York on Wednesday to stop its tariff policy, saying it is unlawful and has brought chaos to the A… [+2120 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "CNET"
+      },
+      "author": "Kevin Lynch",
+      "title": "Watch the Eurovision Song Contest Final 2025 Free From Anywhere",
+      "description": "Get ready for glitter, gimmicks and a sauna-themed song with the 69th edition of the international song competition.",
+      "url": "https://www.cnet.com/tech/services-and-software/watch-the-eurovision-song-contest-final-2025-for-free-from-anywhere/",
+      "urlToImage": "https://www.cnet.com/a/img/resize/cb1c945fecbc1faacaa692e7899dcad208a3fdd5/hub/2025/05/17/b6737b2b-f358-4030-94b4-d8a81c294fab/gettyimages-2214945759.jpg?auto=webp&fit=crop&height=675&width=1200",
+      "publishedAt": "2025-05-17T16:00:06Z",
+      "content": "Expect questionable costumes, quirky lyrics and ear worm melodies as the Eurovision Song Contest Grand Finale takes center stage at St. Jakobshalle in Basel, Switzerland, today, with 26 countries com… [+7007 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Christine Ji",
+      "title": "9 top safe-haven states where jobs and home values are shielded from the trade war fallout",
+      "description": "States less reliant on international trade will be more shielded from the trade war.",
+      "url": "https://www.businessinsider.com/best-housing-markets-trump-trade-war-tariff-proof-job-economy-2025-4",
+      "urlToImage": "https://i.insider.com/680a9496c6ad288d147f148f?width=1200&format=jpeg",
+      "publishedAt": "2025-04-27T10:05:02Z",
+      "content": "The Capitol Hill neighborhood in Washington, DC.Grace Cary/Getty Images\r\n<ul><li>Consumers are worried about their jobs and home values amid the trade war.</li><li>Some states are more insulated from… [+3513 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Andrew J. Hawkins",
+      "title": "Uber users can now earn miles with Delta Air Lines",
+      "description": "Delta SkyMiles members can now link their accounts to Uber, earning miles for money spent on rides and food delivery, the companies announced today. The news kicks off a partnership between Uber and Delta Air Lines that was first announced earlier this year. …",
+      "url": "https://www.theverge.com/news/652755/uber-delta-sky-miles-earn-trips-eats",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/04/Uber-x-Delta-Image.png?quality=90&strip=all&crop=0%2C3.2535527299925%2C100%2C93.492894540015&w=1200",
+      "publishedAt": "2025-04-21T18:36:53Z",
+      "content": "Uber customers can earn one mile per dollar spent on trips to the airport.\r\nUber customers can earn one mile per dollar spent on trips to the airport.\r\nDelta SkyMiles members can now link their accou… [+1879 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "CNET"
+      },
+      "author": "Amanda Kooser",
+      "title": "NASA Astronaut Snaps Knockout Views of Flower Moon in Full Bloom",
+      "description": "The full moon is an ethereal lantern dancing with Earth in NASA astronaut Nichole Ayers' snapshots from the International Space Station.",
+      "url": "https://www.cnet.com/science/space/nasa-astronaut-snaps-knockout-views-of-flower-moon-in-full-bloom/",
+      "urlToImage": "https://www.cnet.com/a/img/resize/be47747fbabfcfe00ec76f39219a889f36f0a9c3/hub/2025/05/13/71fccdc7-76db-4eee-b0a6-2081c9a6cd8d/flowermoon1.jpg?auto=webp&fit=crop&height=675&precrop=2032,1141,x699,y160&width=1200",
+      "publishedAt": "2025-05-13T20:01:21Z",
+      "content": "Spring is popping in the northern hemisphere and the full flower moon joined in on the seasonal celebrations on May 12. Skywatchers on the ground were treated to a glowing disk of light. NASA astrona… [+2602 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Mia Jankowicz",
+      "title": "Kim Jong Un is opening a tourism mega-resort in North Korea. It's unclear how he'll fill its thousands of rooms.",
+      "description": "Wonsan Kalma, North Korea's latest mega project, aims to entice droves of international tourists and their money.",
+      "url": "https://www.businessinsider.com/north-korea-beach-resort-wonsan-kalma-could-open-soon-kim-2025-4",
+      "urlToImage": "https://i.insider.com/67ffb844c6ad288d147e48e0?width=1000&format=jpeg",
+      "publishedAt": "2025-05-04T08:08:01Z",
+      "content": "Kim Jong Un visiting the construction site at Wonsan KalmaKorean Central News Agency/Korea News Service via AP\r\n<ul><li>North Korea plans to open its Wonsan Kalma tourist site in June 2025.</li><li>P… [+8281 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "What's likely to be in Labour's immigration crackdown?",
+      "description": "Home Secretary Yvette Cooper is preparing to unveil an immigration white paper.",
+      "url": "https://www.bbc.com/news/articles/cje72plqk17o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/f184/live/bdabb420-2cfd-11f0-8f57-b7237f6a66e6.jpg",
+      "publishedAt": "2025-05-10T05:01:44Z",
+      "content": "Brian Wheeler\r\nHome Secretary Yvette Cooper is preparing to unveil fresh plans to reduce UK net migration, which last year stood at 728,000.\r\nSuccessive governments have battled largely in vain to re… [+3546 chars]"
+    },
+     {
+      "source": {
+        "id": null,
+        "name": "NPR"
+      },
+      "author": "Willem Marx",
+      "title": "The world mourns the passing of the Pope",
+      "description": "The international community reacts to the death of Pope Francis, who was a truly global figure and influence went beyond the Catholic church.",
+      "url": "https://www.npr.org/2025/04/21/nx-s1-5371185/the-world-mourns-the-passing-of-the-pope",
+      "urlToImage": "https://npr.brightspotcdn.com/dims3/default/strip/false/crop/2260x1271+0+118/resize/1400/quality/100/format/jpeg/?url=http%3A%2F%2Fnpr-brightspot.s3.amazonaws.com%2Fdd%2F0b%2Ffefba5be4606994e4a2988f631da%2Fap25110449409719.jpg",
+      "publishedAt": "2025-04-21T10:29:34Z",
+      "content": "LONDONPolitical and faith leaders from around the world have begun to react to the death of Pope Francis, with messages pouring in from across Europe and beyond.\r\nPrime ministers from the United King… [+1887 chars]"
+    },
+        ],
+      },
 
-    <template id="template-news-card">
-        <div class="card">
-            <div class="card-header">
-                <img src="https://via.placeholder.com/400x200" alt="" id="news-img">
-            </div>
-            <div class="card-content">
-                <h3 id="news-title">Title</h3>
-                <h6 class="news-source" id="news-source"></h6>
-                <p class="news-desc" id="news-desc">text</p>
-            </div>
-        </div>
-    </template>
 
 
+      cricket: {
+        status: "ok",
+        totalResults: 2,
+        articles: [
+          {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "BBC Sport",
+      "title": "ECB bars transgender women from women's cricket",
+      "description": "The England and Wales Cricket Board (ECB) bar transgender women from women's cricket with immediate effect.",
+      "url": "https://www.bbc.com/sport/cricket/articles/c0l0rje87y5o",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/eb7a/live/5c0f70d0-6139-11ee-ac8c-9d18dbc280ea.png",
+      "publishedAt": "2025-05-02T10:42:40Z",
+      "content": "Transgender women have been barred from competing in all levels of women's cricket with immediate effect, the England and Wales Cricket Board (ECB) has announced.\r\nIn an update to its transgender reg… [+361 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "Stephan Shemilt",
+      "title": "McCullum calls on England to improve 'humility'",
+      "description": "England men's cricket team do not want to feel out of touch with their fans, says head coach Brendon McCullum.",
+      "url": "https://www.bbc.com/sport/cricket/articles/clygg3pe6jeo",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/aa41/live/342ac6b0-3580-11f0-9b2c-138cad92aeb3.jpg",
+      "publishedAt": "2025-05-20T14:04:07Z",
+      "content": "Allied to the inconsistent results are the perception of the England team and some of the comments they make in the media.\r\nDuring the Champions Trophy they were criticised for not training enough by… [+1364 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "Matthew Henry",
+      "title": "PSL considering postponing rest of season",
+      "description": "The Pakistan Super League is considering postponing the remainder of its season amid the ongoing tensions between India and Pakistan.",
+      "url": "https://www.bbc.com/sport/cricket/articles/cr4z023edyko",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/df25/live/4a2103c0-2c0d-11f0-8da1-ad2bbee6cda5.jpg",
+      "publishedAt": "2025-05-08T17:27:22Z",
+      "content": "James Vince, Chris Jordan, Tom Curran, David Willey, Sam Billings, Luke Wood and Tom Kohler-Cadmore are the English players involved in the PSL, while there are also English coaches at various franch… [+2312 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "Stephan Shemilt",
+      "title": "IPL suspended for one week over safety concerns",
+      "description": "The Indian Premier League is suspended for one week amid the ongoing tensions between India and neighbouring Pakistan.",
+      "url": "https://www.bbc.com/sport/cricket/articles/c753n4ngd0ko",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/eb7a/live/5c0f70d0-6139-11ee-ac8c-9d18dbc280ea.png",
+      "publishedAt": "2025-05-09T09:21:32Z",
+      "content": "The Indian Premier League has been suspended for one week amid the ongoing tensions between India and neighbouring Pakistan.\r\nOvernight, India accused Pakistan of attacking three of its military base… [+1786 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "The heartbeat of a billion: What Virat Kohli meant to India",
+      "description": "Legendary India batter Virat Kohli announced retirement from international Test cricket on Monday.",
+      "url": "https://www.bbc.com/news/articles/cp857gryxn1o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/bcfb/live/204bae40-2fa7-11f0-8f57-b7237f6a66e6.jpg",
+      "publishedAt": "2025-05-13T23:16:31Z",
+      "content": "Virat Kohli announced his retirement after a 14-year Test career\r\nVirat Kohli's retirement from Tests has left Indian cricket beleaguered and the sporting world gasping in surprise.\r\nComing on the he… [+8200 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Android Police"
+      },
+      "author": "Timi Cantisano",
+      "title": "Total Wireless promo knocks 50% off plans for Metro and Cricket subscribers",
+      "description": "Metro and Cricket customers can get half off with this Total Wireless promotion",
+      "url": "https://www.androidpolice.com/total-wireless-knocks-50-off-plans-metro-cricket-subscribers/",
+      "urlToImage": "https://static1.anpoimages.com/wordpress/wp-content/uploads/wm/2024/11/total-wireless-home-page-galaxy.jpeg",
+      "publishedAt": "2025-05-02T22:49:10Z",
+      "content": "If you're looking to reduce the cost of your wireless plan, going with a prepaid carrier might be the way to go. Not only will you get excellent wireless coverage, but brands often feature impressive… [+2230 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Android Police"
+      },
+      "author": "Timi Cantisano",
+      "title": "Cricket Wireless more than quadruples its international calling lineup",
+      "description": "Cricket Wireless enhances its international calling service, now making it easier to reach friends and family in more locations",
+      "url": "https://www.androidpolice.com/cricket-wireless-international-calling-lineup-update/",
+      "urlToImage": "https://static1.anpoimages.com/wordpress/wp-content/uploads/wm/2024/10/cricket-wireless-plan-info-phone-june2024.jpeg",
+      "publishedAt": "2025-05-14T21:03:10Z",
+      "content": "Summary\r\n<ul><li>\r\n Cricket Wireless now offers improved international long-distance calling and messaging services to over 200 locations.\r\n </li><li>\r\n Subscribers can pay $15 extra for unlimited ca… [+1723 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Android Central"
+      },
+      "author": "jerry.hildenbrand@futurenet.com (Jerry Hildenbrand)",
+      "title": "Now is a great time to buy a phone you can fix yourself — The HMD Skyline is at Amazon, and it's 30% off the regular price",
+      "description": "If you care about repairability HMD has a phone for you. If you care about saving money, this deal is for you.",
+      "url": "https://www.androidcentral.com/phones/hmd-global/now-is-a-great-time-to-buy-a-phone-you-can-fix-yourself-the-hmd-skyline-is-at-amazon-and-its-30-percent-off-the-regular-price",
+      "urlToImage": "https://cdn.mos.cms.futurecdn.net/Gi2Fk6VXsqzEAL7T3FY5pY.jpg",
+      "publishedAt": "2025-05-07T19:18:39Z",
+      "content": "One of the coolest phones released in 2024 is at one of its best prices right now at Amazon: you can snag the HMD Skyline for $349, 30% off the normal price, in either Topaz or Pink (get the pink). I… [+2247 chars]"
+    },
+    {
+      "source": {
+        "id": "al-jazeera-english",
+        "name": "Al Jazeera English"
+      },
+      "author": "Al Jazeera",
+      "title": "Virat Kohli announces retirement from Test cricket",
+      "description": "In the end of an era for Indian Test cricket, Virat Kohli follows fellow batting star Rohit Sharma into retirement.",
+      "url": "https://www.aljazeera.com/sports/2025/5/12/virat-kohli-announces-retirement-from-test-cricket",
+      "urlToImage": "https://www.aljazeera.com/wp-content/uploads/2025/05/GettyImages-2191430694-1747034199.jpg?resize=1920%2C1327",
+      "publishedAt": "2025-05-12T07:48:19Z",
+      "content": "India batsman Virat Kohli announced his retirement from Test cricket, bringing down the curtain on a sparkling career in the longest format just days after captain Rohit Sharma did the same.\r\nKohli, … [+2162 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "BBC Sport",
+      "title": "India legend Kohli announces Test retirement",
+      "description": "Virat Kohli announces his immediate retirement from Test cricket.",
+      "url": "https://www.bbc.com/sport/cricket/articles/c0mrzlr919xo",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/eb7a/live/5c0f70d0-6139-11ee-ac8c-9d18dbc280ea.png",
+      "publishedAt": "2025-05-12T06:34:30Z",
+      "content": "The hilarious mind of a dry-witted, grief-riddled woman"
+    },
+    {
+      "source": {
+        "id": "le-monde",
+        "name": "Le Monde"
+      },
+      "author": "Le Monde avec AFP",
+      "title": "En Afghanistan, les talibans interdisent les échecs, jugés contraires à la loi sur les mœurs",
+      "description": "Selon la direction des sports, les échecs sont désormais suspendus en raison d’enjeux religieux non résolus.",
+      "url": "https://www.lemonde.fr/international/article/2025/05/11/en-afghanistan-les-talibans-interdisent-les-echecs-juges-contraires-a-la-loi-sur-les-m-urs_6605136_3210.html",
+      "urlToImage": "https://img.lemde.fr/2025/05/11/0/4/5400/3600/1440/960/60/0/3803d09_sirius-fs-upload-1-7qxxcnro1lav-1746974997914-000-32dl69j.jpg",
+      "publishedAt": "2025-05-11T15:08:43Z",
+      "content": "Des joueurs jouent aux échecs lors dun tournoi à Kandahar, au sud de lAfghanistan, le 30 juin 2022. JAVED TANVEER/AFP\r\nLe gouvernement taliban a ajouté à sa liste des activités interdites les échecs,… [+1847 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "Matthew Henry",
+      "title": "Rabada free to return to cricket after drugs ban",
+      "description": "South Africa bowler Kagiso Rabada is cleared to return to cricket after serving a one-month ban for taking a recreational drug.",
+      "url": "https://www.bbc.com/sport/cricket/articles/ckg2kqq1xzko",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/28f5/live/278d1830-29ab-11f0-a252-f789f44e224b.jpg",
+      "publishedAt": "2025-05-05T12:32:33Z",
+      "content": "Saids and the World Anti-Doping Agency define substances of abuse as those \"frequently abused in society outside of the context of sport\".\r\n\"The player accepted responsibility for the doping offence … [+717 chars]"
+    },
+    {
+      "source": {
+        "id": "al-jazeera-english",
+        "name": "Al Jazeera English"
+      },
+      "author": "Al Jazeera",
+      "title": "Pakistan postpones PSL T20 cricket amid clashes with India",
+      "description": "Pakistan postpones its Twenty20 league indefinitely, scrapping UAE relocation plan, as tension with India escalates.",
+      "url": "https://www.aljazeera.com/sports/2025/5/10/pakistan-postpones-psl-t20-cricket-amid-clashes-with-india",
+      "urlToImage": "https://www.aljazeera.com/wp-content/uploads/2025/05/13025220-1746865956.jpg?resize=1200%2C675",
+      "publishedAt": "2025-05-10T08:59:20Z",
+      "content": "The Pakistan Cricket Board has postponed its Pakistan Super League T20 cricket tournament following rising military tensions between India and Pakistan.\r\nThe PCB said it acted on advice from Pakistan… [+2499 chars]"
+    },
+    {
+      "source": {
+        "id": "usa-today",
+        "name": "USA Today"
+      },
+      "author": "Anthony Robledo, USA TODAY",
+      "title": "Dashcam footage captures dazzling meteor, known as bolide, illuminate Australia sky",
+      "description": "On the early morning of May 12, truck driver Brian Robbins witnessed the meteor illuminate the sky above Coolgardie, Australia.",
+      "url": "https://www.usatoday.com/story/news/world/2025/05/13/bolide-meteor-seen-western-australia/83591633007/",
+      "urlToImage": "https://s.yimg.com/ny/api/res/1.2/PCKNw2k88KvedfmWgbZhZg--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD02NzU-/https://media.zenfs.com/en/usa_today_news_641/7614b75a33aba831ceff0a63469f9df5",
+      "publishedAt": "2025-05-13T21:46:21Z",
+      "content": "Motorists across Western Australia were granted the opportunity to make a wish when a shooting star briefly illuminated the sky.\r\nEarly morning on May 12, truck driver Brian Robbins witnessed the met… [+1131 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "BBC Sport",
+      "title": "Munsey ton in vain as Scotland lose to Netherlands",
+      "description": "Scotland fail to chase down a target of 283 against the Netherlands in Cricket World Cup League 2 despite a superb 106 from opener George Munsey.",
+      "url": "https://www.bbc.com/sport/cricket/articles/c9q0vpdyp13o",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/444f/live/2791d460-2de3-11f0-84b8-350417c357f1.jpg",
+      "publishedAt": "2025-05-10T21:39:29Z",
+      "content": "Scotland failed to chase down a target of 283 against the Netherlands in Cricket World Cup League 2 despite a superb 106 from opener George Munsey.\r\nHaving been shocked by United Arab Emirates on Thu… [+514 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "BBC Sport",
+      "title": "Munsey's 78 ensures Scotland sink UAE in World Cup League 2",
+      "description": "George Munsey's 78 runs helped Scotland overcome United Arab Emirates by three wickets in their ICC Cricket World Cup League 2 fixture.",
+      "url": "https://www.bbc.com/sport/cricket/articles/ce92l97vk5no",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/12a7/live/459faeb0-290a-11f0-a0dd-990c04e36239.jpg",
+      "publishedAt": "2025-05-04T18:01:18Z",
+      "content": "George Munsey's 78 helped Scotland overcome United Arab Emirates by three wickets in their ICC Cricket World Cup League 2 fixture.\r\nThe victory in the Netherlands means Scotland, reigning League 2 wi… [+362 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Itsnicethat.com"
+      },
+      "author": "Paul Moore",
+      "title": "Tom Shaw reclaims cricket from stereotypes and sensationalism with grounded sports photography",
+      "description": "Cloudy skies, community centres and adopted greens are shot with honesty and love in this new tribute to British cricket.",
+      "url": "https://www.itsnicethat.com/articles/tom-shaw-portrait-of-cricket-photography-project-200525",
+      "urlToImage": "https://admin.itsnicethat.com/images/NTcu_6JHD1uRjyTXXG4BbPgj-Gs=/265111/width-1440/Tom_Shaw_Portrait_of_Cricket_017.jpg",
+      "publishedAt": "2025-05-20T08:00:00Z",
+      "content": "The other aspect of shaping the project came from the current visual record grassroots cricket. Often pejoratively referred to as village cricket, Toms photography captures the essence of community s… [+1984 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": "BBC Sport",
+      "title": "Tennant to succeed Joyce as Ireland head coach",
+      "description": "Cricket Ireland announces that Lloyd Tennant will become the new head coach of Ireland's women's team, replacing the outgoing Ed Joyce.",
+      "url": "https://www.bbc.com/sport/cricket/articles/cwy0z28dgwmo",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/branded_sport/1200/cpsprodpb/b32d/live/c2ee71d0-2757-11f0-b745-ddd00b76d3a8.jpg",
+      "publishedAt": "2025-05-02T13:21:53Z",
+      "content": "Cricket Ireland has announced that Lloyd Tennant will become Ireland Women's new head coach.\r\nTennant has 30 years of experience in coaching and has worked with England's Female Academy and 'A' Team.… [+1327 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Foster family says refugee 'owes everything to Freddie'",
+      "description": "Flintoff TV show refugee Adnan Miakhel makes Lancs Second XI debut",
+      "url": "https://www.bbc.com/sport/cricket/videos/c0el3wyn339o",
+      "urlToImage": "https://ichef.bbci.co.uk/ace/standard/1024/cpsprodpb/0506/live/07ac5d70-2693-11f0-8c66-ebf25fc2cfef.jpg",
+      "publishedAt": "2025-05-01T15:16:48Z",
+      "content": "Teenage Afghan refugee Adnan Miakhel, who starred in BBC TV Series Freddie Flintoff's Field of Dreams, has made his debut for Lancashire's Second XI.\r\nAdnan arrived in the UK on the back of a lorry i… [+477 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Gizmodo.com"
+      },
+      "author": "Joe Tilleli",
+      "title": "Apple Doesn’t Have a Smartphone This Small or This Cheap (Under $100), but Here It Is",
+      "description": "Save 55% on the remarkably tiny NanoPhone for a limited time.",
+      "url": "https://gizmodo.com/apple-doesnt-have-a-smartphone-this-small-or-this-cheap-under-100-but-here-it-is-2000596573",
+      "urlToImage": "https://gizmodo.com/app/uploads/2025/04/NanoPhone-3.jpg",
+      "publishedAt": "2025-05-01T13:55:19Z",
+      "content": "Remember that short period of time when phone sizes actually trended downward each year? We wanted smaller and smaller phones. We wanted a device that could easily fit in our pockets and be unobtrusi… [+2261 chars]"
+    },
+    {
+      "source": {
+        "id": "al-jazeera-english",
+        "name": "Al Jazeera English"
+      },
+      "author": "Al Jazeera",
+      "title": "India suspends IPL for a week, Pakistan moves T20 league amid conflict",
+      "description": "IPL suspended for a week while the PSL moved to United Arab Emirates due to ongoing India and Pakistan conflict.",
+      "url": "https://www.aljazeera.com/sports/2025/5/9/india-suspends-ipl-for-a-week-pakistan-moves-t20-league-amid-conflict",
+      "urlToImage": "https://www.aljazeera.com/wp-content/uploads/2025/05/AP25129368131739-1746786548.jpg?resize=1920%2C1440",
+      "publishedAt": "2025-05-09T10:42:04Z",
+      "content": "Indias biggest domestic sports tournament has been suspended for one week following the escalating military tensions with Pakistan, who have relocated their own premier event.\r\nThe Indian Premier Lea… [+2403 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Deadline"
+      },
+      "author": "Jesse Whittock",
+      "title": "Indian Premier League Cricket Suspended Amid Hostilities With Pakistan; Rights Holder Jiostar Thanked For “Understanding And Unwavering Support”",
+      "description": "The globally-recognized Indian Premier League (IPL) cricket tournament has been suspended for a week amid hostilities between India and neighboring Pakistan. The Board of Control for Cricket in India (BCCI) confirmed the shutdown in a statement today followin…",
+      "url": "http://deadline.com/2025/05/indian-premier-league-cricket-suspended-india-pakistan-1236391476/",
+      "urlToImage": "https://deadline.com/wp-content/uploads/2025/05/Punjab-KIngs-vs-Delhi-Capitals-cancelled-e1746802447315.jpg?w=1024",
+      "publishedAt": "2025-05-09T16:17:06Z",
+      "content": "The globally-recognized Indian Premier League (IPL) cricket tournament has been suspended for a week amid hostilities between India and neighboring Pakistan.\r\nThe Board of Control for Cricket in Indi… [+2679 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "AndroidGuys"
+      },
+      "author": "Scott Webster",
+      "title": "Total Wireless Launches Aggressive Offers for Metro and Cricket Switchers",
+      "description": "Total Wireless is making a bold play for budget-conscious mobile users with two new promotions aimed at customers leaving Metro or Cricket. Backed by Verizon’s 5G network, the prepaid brand is offering deep discounts, free phones, and long-term pricing stabil…",
+      "url": "https://androidguys.com/news/total-wireless-launches-aggressive-offers-for-metro-and-cricket-switchers/",
+      "urlToImage": "https://i0.wp.com/androidguys.com/wp-content/uploads/2024/07/Total-W_Logo_Horizontal_RGB.jpg?fit=1200%2C630&ssl=1",
+      "publishedAt": "2025-05-02T19:21:02Z",
+      "content": "Total Wireless is making a bold play for budget-conscious mobile users with two new promotions aimed at customers leaving Metro or Cricket. Backed by Verizons 5G network, the prepaid brand is offerin… [+2125 chars]"
+    },
+    {
+      "source": {
+        "id": "al-jazeera-english",
+        "name": "Al Jazeera English"
+      },
+      "author": null,
+      "title": "14-year-old Indian cricket prodigy makes history with batting blitz",
+      "description": "14-year-old Vaibhav Suryavanshi has sent the cricketing world into a frenzy after scoring a century in the IPL.",
+      "url": "https://www.aljazeera.com/program/newsfeed/2025/4/29/14-year-old-indian-cricket-prodigy-makes-history-with-batting-blitz",
+      "urlToImage": "https://www.aljazeera.com/wp-content/uploads/2025/04/image-1745928066.jpg?resize=1477%2C1080&quality=80",
+      "publishedAt": "2025-04-29T12:01:34Z",
+      "content": "NewsFeed\r\n14-year-old Vaibhav Suryavanshi has sent the cricketing world into a frenzy after he became the youngest ever player to hit a century in the Indian Premier League. Suryavanshi hit 100 runs … [+32 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Forbes"
+      },
+      "author": "Manasi Pathak, Contributor, \n Manasi Pathak, Contributor\n https://www.forbes.com/sites/manasipathak/",
+      "title": "Virat Kohli Announces Retirement From Test Cricket",
+      "description": "Virat Kohli, one of India’s greatest batters, has announced his retirement from test cricket, bringing an end to a glorious journey that lasted 14 years.",
+      "url": "https://www.forbes.com/sites/manasipathak-1/2025/05/12/virat-kohli-announces-retirement-from-test-cricket/",
+      "urlToImage": "https://imageio.forbes.com/specials-images/imageserve/6821978e7fd2bba26bf9074f/0x0.jpg?format=jpg&height=900&width=1600&fit=bounds",
+      "publishedAt": "2025-05-12T06:48:29Z",
+      "content": "India's talismanic batsman and former captain Virat Kohli is retiring from the longest format of the ... More game. (Photo by Darrian Traynor/Getty Images)\r\nGetty Images\r\nVirat Kohli, one of Indias g… [+1082 chars]"
+    },
+        ],
+      },
+
+
+
+
+
+
+
+
+
+
+
+      politics: {
+        status: "ok",
+        totalResults: 2,
+        articles: [
+          {
+      "source": {
+        "id": "wired",
+        "name": "Wired"
+      },
+      "author": "Jacob Kleinman",
+      "title": "Star Wars’ 'Andor' Season 2 Depicts the Banality of American Fascism",
+      "description": "The franchise’s Disney era has been defined by toothless politics, but \"Andor\" Season 2 is a vivid metaphor for America’s descent into authoritarianism.",
+      "url": "https://www.wired.com/story/star-wars-andor-season-2-depicts-the-banality-of-american-fascism/",
+      "urlToImage": "https://media.wired.com/photos/6807f2f647c24b8b0c2ba711/191:100/w_1280,c_limit/Star-Wars-Fascism-Culture-PGM2-FF-002971.jpg",
+      "publishedAt": "2025-04-23T17:43:12Z",
+      "content": "In the first three episodes of Andor Season 2, which started streaming on Disney+ on April 22, one of the shows many interlocking plotlines takes us to Mina-Rau, an agricultural planet on the outer r… [+4060 chars]"
+    },
+    {
+      "source": {
+        "id": "wired",
+        "name": "Wired"
+      },
+      "author": "Ryan Broderick",
+      "title": "4chan Is Dead. Its Toxic Legacy Is Everywhere",
+      "description": "It's likely that there will never be a site like 4chan again. But everything now—from X and YouTube to global politics—seems to carry its toxic legacy.",
+      "url": "https://www.wired.com/story/4chan-is-dead-its-toxic-legacy-is-everywhere/",
+      "urlToImage": "https://media.wired.com/photos/68013f3c96c7b630c4e15444/191:100/w_1280,c_limit/4Chan-Legacy-Culture-1814351886.jpg",
+      "publishedAt": "2025-04-22T14:40:20Z",
+      "content": "Many of the 4chan users that called me mid-Battletoad attack left messages. I listened to all of them. A pattern quickly emerged: young men, clearly nervous to even leave a message, trying to harass … [+3086 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Gizmodo.com"
+      },
+      "author": "Ed Cara",
+      "title": "Moderna’s Super-Vaccine for Flu and Covid Works—Now Politics Could Sink It",
+      "description": "A new trial suggests a combination vaccine may offer equal or better protection against both flu and covid-19 compared to current vaccines.",
+      "url": "https://gizmodo.com/modernas-super-vaccine-for-flu-and-covid-works-now-politics-could-sink-it-2000599293",
+      "urlToImage": "https://gizmodo.com/app/uploads/2025/04/Vaccine.jpg",
+      "publishedAt": "2025-05-11T12:00:19Z",
+      "content": "Moderna’s mRNA-based flu and covid-19 vaccine could provide the best of both worldsif it’s actually ever approved by the Food and Drug Administration.\r\nThis week, scientists at Moderna published data… [+3075 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Tina Nguyen",
+      "title": "Pete Buttigieg makes his first foray into the podcast manosphere",
+      "description": "A Democrat has entered the manosphere. Pete Buttigieg, the former Secretary of Transportation in the Biden Administration and a presidential candidate in 2020, sat for a three-hour appearance on Andrew Schultzâs Flagrant on Wednesday to discuss current even…",
+      "url": "https://www.theverge.com/internet-culture/654543/pete-buttigieg-flagrant-podcast",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/04/pete-buttigieg-andrew-schultz-flagrant.png?quality=90&strip=all&crop=0.26752818256805%2C0%2C99.464943634864%2C100&w=1200",
+      "publishedAt": "2025-04-23T17:56:34Z",
+      "content": "The former Transportation Secretary appeared on Andrew Schultzs Flagrant, calling out Democrats for avoiding bro media.\r\nThe former Transportation Secretary appeared on Andrew Schultzs Flagrant, call… [+3372 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Talia Lakritz",
+      "title": "What members of the Trump family have worn to the Met Gala through the years",
+      "description": "Donald Trump, Melania Trump, and Ivanka Trump were all fixtures of the Met Gala until their involvement in politics.",
+      "url": "https://www.businessinsider.com/donald-melania-ivanka-trump-met-gala",
+      "urlToImage": "https://i.insider.com/6633a7d810dfcda40965d7a5?width=1200&format=jpeg",
+      "publishedAt": "2025-04-29T20:36:38Z",
+      "content": "Ivanka Trump, Donald Trump, and Melania Trump at the Met Gala.Evan Agostini/Getty Images\r\n<ul><li>Donald Trump was a regular guest at the Met Gala beginning in the 1980s.</li><li>Melania Trump wore l… [+10333 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "insider@insider.com (John L. Dorman)",
+      "title": "Warren Buffett says US spending is 'unsustainable,' but doesn't envy DOGE and its efforts to fix it",
+      "description": "When Buffett was asked about DOGE, he didn't delve into its politics. However, he said it is a tough but necessary job to cut the US deficit.",
+      "url": "https://www.businessinsider.com/warren-buffett-federal-deficit-unsustainable-doge-spending-2025-5",
+      "urlToImage": "https://i.insider.com/68166d82c6ad288d147ff4aa?width=1200&format=jpeg",
+      "publishedAt": "2025-05-03T20:48:49Z",
+      "content": "Warren Buffett said Saturday during Berkshire Hathaway's annual shareholder meeting that the United States has an \"unsustainable\" level of debt, but didn't envy those who were tackling the issue.\r\nTh… [+2098 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "mfox@businessinsider.com (Matthew Fox)",
+      "title": "5 charts that show Elon Musk and Tesla's struggles during Trump's first 100 days",
+      "description": "Elon Musk's foray into politics has stoked protests and fears of damage to the Tesla brand. Here's how Musk has fared early in Trump's second term.",
+      "url": "https://www.businessinsider.com/elon-musk-net-worth-tesla-sales-down-trump-100-days-2025-4",
+      "urlToImage": "https://i.insider.com/680f9d24c6ad288d147f4f73?width=1200&format=jpeg",
+      "publishedAt": "2025-04-28T18:36:54Z",
+      "content": "Elon Musk was viewed as a big winner of President Donald Trump's election, but the first 100 days of the new administration haven't been all that smooth for the world's richest person.\r\nMusk bet big … [+3680 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Umar Shakir",
+      "title": "Tesla is making progress on its 1950s diner and drive-in",
+      "description": "Tesla has shared new images of its first retro drive-in restaurant location in Los Angeles.  The company’s CEO Elon Musk dreamt up the idea of a 1950s-themed “Tesla Diner” and Supercharger hub, complete with employees on rollerskates, as far back as 2018. Mor…",
+      "url": "https://www.theverge.com/news/653959/tesla-1950s-diner-drive-in-near-complete-los-angeles",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/04/Screenshot-2025-04-22-at-4.46.42%E2%80%AFPM.jpeg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-04-22T22:04:19Z",
+      "content": "New pictures show the Los Angeles-based Tesla Diner nearing completion.\r\nNew pictures show the Los Angeles-based Tesla Diner nearing completion.\r\nTesla has shared new images of its first retro drive-… [+902 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Jay Peters",
+      "title": "The Washington Post will now let ChatGPT summarize its articles",
+      "description": "The Washington Post and OpenAI have announced a “strategic partnership” that will “make high-quality news more accessible in ChatGPT,” according to a Washington Post press release. OpenAI has already made partnerships with over 20 other news publishers, inclu…",
+      "url": "https://www.theverge.com/news/653500/the-washington-post-openai-chatgpt-partnership",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/04/STK_414_AI_CHATBOT_R2_CVirginia_B.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-04-22T15:45:55Z",
+      "content": "OpenAI has already made partnerships with over 20 other publishers.\r\nOpenAI has already made partnerships with over 20 other publishers.\r\nThe Washington Post and OpenAI have announced a strategic par… [+1351 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Ash Parrish",
+      "title": "Netflix is turning mobile blockbuster Clash of Clans into an animated series",
+      "description": "In the great big ‘ol list of games that are getting an adaptation you can now add Clash of Clans to the list. Supercell’s mobile strategy games Clash of Clans and Clash Royale, two of the biggest, highest grossing games in the world, will serve as the foundat…",
+      "url": "https://www.theverge.com/news/670547/clash-of-clans-netflix-animated-adaptation",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/AAAAQZCbCIYo3pnXfUjGdkfMN97vRWfsxuioHIAMpzHRnAbLzKlS6bR0dytRA5DhdWL22PvNQoYZtUB8INSfxXJnFSfbfkNMvFOz-7UtJTvGoT10CKRHus0p2Wt6nHcxnM_rB6Yr6-5gjgZaU33jkppcNTOawmk.jpg?quality=90&strip=all&crop=0,3.4613147178592,100,93.077370564282",
+      "publishedAt": "2025-05-20T14:59:51Z",
+      "content": "Adaptations for the adaptation machine.\r\nIn the great big ol list of games that are getting an adaptation you can now add Clash of Clans to the list. Supercells mobile strategy games Clash of Clans a… [+1039 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Bryan Metzger",
+      "title": "The overlooked reason both Democrats and Republicans promote stock trading bans",
+      "description": "It's not just about ethics. It's about politics. Nancy Pelosi and Marjorie Taylor Greene are each foils for both parties' stock trade ban proponents.",
+      "url": "https://www.businessinsider.com/stock-trading-boogeymen-pelosi-marjorie-taylor-greene-2025-4",
+      "urlToImage": "https://i.insider.com/680f9ceb3fe8d39283643b06?width=1200&format=jpeg",
+      "publishedAt": "2025-04-28T17:50:59Z",
+      "content": "When it comes to stock trading, each party has its own boogeyman (or boogeywoman) on the other side of the aisle.Jacek Boczarski/Anadolu via Getty Images; Tom Williams/CQ-Roll Call via Getty Images\r\n… [+3466 chars]"
+    },
+    {
+      "source": {
+        "id": "business-insider",
+        "name": "Business Insider"
+      },
+      "author": "Kwan Wei Kevin Tan",
+      "title": "Elon Musk went on a media blitz. Here are 5 takeaways from his interviews.",
+      "description": "In media interviews on Tuesday, Musk reaffirmed his commitment to Tesla and said he'd be spending less on politics in the future.",
+      "url": "https://www.businessinsider.com/5-takeaways-from-elon-musk-media-blitz-2025-5",
+      "urlToImage": "https://i.insider.com/682d3e3aac40ae2b0c9e9c14?width=1200&format=jpeg",
+      "publishedAt": "2025-05-21T05:30:06Z",
+      "content": "In media interviews on Tuesday, Musk reaffirmed his commitment to Tesla and said he'd be spending less on politics in the future.Andrew Harnik via Getty Images\r\n<ul><li>Elon Musk gave media interview… [+5822 chars]"
+    },
+    {
+      "source": {
+        "id": "the-verge",
+        "name": "The Verge"
+      },
+      "author": "Jess Weatherbed",
+      "title": "Tesla finally calls it quits on Cybertruck range extender",
+      "description": "Tesla has officially scrapped the range extender accessory it was making for Cybertrucks. In emails seen by Electrek, Tesla confirmed to Cybertruck owners that it’s “no longer planning to sell” the $16,000 battery pack, and that it would be issuing full refun…",
+      "url": "https://www.theverge.com/news/663157/tesla-cybertruck-range-extender-cancelled-refunds",
+      "urlToImage": "https://platform.theverge.com/wp-content/uploads/sites/2/2025/05/STKS493_CYBERTRUCK_CVIRGINIA_C.jpg?quality=90&strip=all&crop=0%2C10.732984293194%2C100%2C78.534031413613&w=1200",
+      "publishedAt": "2025-05-08T10:13:23Z",
+      "content": "Customers will be refunded the $2,000 deposits placed to preorder the $16,000 battery pack.\r\nCustomers will be refunded the $2,000 deposits placed to preorder the $16,000 battery pack.\r\nTesla has off… [+1721 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "PEOPLE"
+      },
+      "author": "Jillian Frankel",
+      "title": "Donald Trump Jr. Mocks Jill Biden After Her Husband's Highly Aggressive Prostate Cancer Diagnosis",
+      "description": "The eldest son of President Donald Trump slammed the first lady shortly after promising to put \"politics aside\"",
+      "url": "https://people.com/donald-trump-jr-mocks-jill-biden-husband-cancer-diagnosis-11737494",
+      "urlToImage": "https://s.yimg.com/ny/api/res/1.2/MAJUfeMd9qTScCqgRz8ypA--/YXBwaWQ9aGlnaGxhbmRlcjt3PTEyMDA7aD04MDA-/https://media.zenfs.com/en/people_218/5946b9350d1d9c6d6b4c44147ee29d73",
+      "publishedAt": "2025-05-19T17:17:32Z",
+      "content": "<ul><li>Donald Trump Jr. attacked Dr. Jill Biden online over the weekend, accusing the former first lady of either failing to be attentive to her husband or taking part in a \"coverup\" to hide his can… [+3073 chars]"
+    },
+    {
+      "source": {
+        "id": "polygon",
+        "name": "Polygon"
+      },
+      "author": "Maddy Myers",
+      "title": "The GTA 6 trailer makes Rockstar’s changed politics very clear",
+      "description": "Back in 2022, Bloomberg reported that “Rockstar Games cleaned up its frat-boy culture – and Grand Theft Auto, too.” The changes took shape in different ways, from less crunch to a narrowing of the gender pay gap for workers at the studio, and to the introduct…",
+      "url": "https://www.polygon.com/opinion/597869/gta-6-trailer-2-lucia-gta-5-comparison",
+      "urlToImage": "https://platform.polygon.com/wp-content/uploads/sites/2/2025/05/vlcsnap-2025-05-06-13h45m59s409.jpg?quality=90&strip=all&crop=0%2C10.386273360239%2C85.120001220703%2C79.227458960515&w=1200",
+      "publishedAt": "2025-05-06T18:07:36Z",
+      "content": "Back in 2022, Bloomberg reported that “Rockstar Games cleaned up its frat-boy culture – and Grand Theft Auto, too.” The changes took shape in different ways, from less crunch to a narrowing of the ge… [+5943 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Gizmodo.com"
+      },
+      "author": "Sabina Graves",
+      "title": "Stellan Skarsgård Says Andor‘s Strength Is in Its Heroes Not Lightsabers",
+      "description": "The actor discusses how his pivotal role as Luthen Rael represents the duality of the Star Wars universe.",
+      "url": "https://gizmodo.com/stellan-skarsgard-says-andors-strength-is-in-its-heroes-not-lightsabers-2000596728",
+      "urlToImage": "https://gizmodo.com/app/uploads/2025/04/luthen-rael-andor-lucasfilm.jpg",
+      "publishedAt": "2025-04-30T23:30:24Z",
+      "content": "Andor star Stellan Skarsgård recently appeared on the Q with Tom Power show to discuss the series’ revolution game master’s deliberate ambiguity behind the curtain. Luthen Rael, if that’s his real na… [+3250 chars]"
+    },
+    {
+      "source": {
+        "id": "time",
+        "name": "Time"
+      },
+      "author": "Miranda Jeyaretnam",
+      "title": "Who Chooses the Next Pope—and Who Chose Them?",
+      "description": "Understanding the politics of the cardinals—and how Francis may have influenced the election of his successor.",
+      "url": "https://time.com/7279520/francis-appointed-cardinals-elect-new-pope-vatican-conclave-court-packing/",
+      "urlToImage": "https://api.time.com/wp-content/uploads/2025/04/conclave-2013.jpg?quality=85&w=1024&h=628&crop=1",
+      "publishedAt": "2025-04-23T04:30:00Z",
+      "content": "When white smoke billowed out of the chimney of the Sistine Chapel on March 13, 2013, alerting the public that the 115 cardinal electors inside had concluded their voting, few members of the public m… [+6653 chars]"
+    },
+    {
+      "source": {
+        "id": "time",
+        "name": "Time"
+      },
+      "author": "Chad de Guzman / Manila",
+      "title": "The Dutertes Aren’t Going Away Without a Fight: What to Take Away From the Philippines’ Election",
+      "description": "Here’s what to know about the crucial midterms and the rival dynasties at the heart of the Southeast Asian nation’s politics.",
+      "url": "https://time.com/7285057/philippines-elections-results-senate-duterte-marcos-drug-war-political-dynasties/",
+      "urlToImage": "https://api.time.com/wp-content/uploads/2025/05/philippines-midterm-elections-2025.jpg?quality=85&w=1024&h=628&crop=1",
+      "publishedAt": "2025-05-13T04:00:00Z",
+      "content": "The Philippines 2025 midterm election could have marked a moment of reckoning for the decades-old populist Duterte dynasty. Its patriarch, 80-year-old former President Rodrigo, had been arrested by t… [+6916 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Denyer won't seek re-election as Green Party co-leader",
+      "description": "The MP for Bristol Central, who was elected last year, says he wants to focus on her parliamentary role.",
+      "url": "https://www.bbc.com/news/articles/cqxejw1gvd8o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/04f6/live/bb3dbde0-2beb-11f0-ac4d-93af73254e07.jpg",
+      "publishedAt": "2025-05-08T09:34:30Z",
+      "content": "Becky Morton\r\nCarla Denyer has announced she will not stand again as co-leader of the Green Party of England and Wales, saying she wants to focus on her role as an MP. \r\nThe MP for Bristol Central wa… [+3441 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Why Pope's death leaves Argentines 'orphaned' in more ways than one",
+      "description": "Pope Francis was a source of pride for Argentina - but his failure to visit was a disappointment for many.",
+      "url": "https://www.bbc.com/news/articles/cpdzy96xdzqo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/f572/live/77363960-1f5c-11f0-82d1-0597deebe2d3.jpg",
+      "publishedAt": "2025-04-22T10:49:37Z",
+      "content": "Veronica SminkBBC News Mundo, Buenos Aires\r\nJorge Bergoglio was archbishop of Buenos Aires before he was elected Pope\r\nWhen the former Archbishop of Buenos Aires, Jorge Mario Bergoglio, left Argentin… [+7300 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Chris Mason: A wildly unpredictable local elections",
+      "description": "The results of the ballots will mould the national political mood, our political editor writes.",
+      "url": "https://www.bbc.com/news/articles/c62zqz7r5dno",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/ef97/live/174b1700-256f-11f0-96b7-21f0a9b9800e.png",
+      "publishedAt": "2025-04-30T03:20:47Z",
+      "content": "If last year's general election was all consuming and everywhere, this year's local elections, in truth, are neither.\r\nThat is not to denigrate for a moment how much they matter in the places where t… [+3883 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "What you need to know about the Runcorn and Helsby by-election",
+      "description": "The poll was prompted after the incumbent MP was sentenced for assaulting a constituent.",
+      "url": "https://www.bbc.com/news/articles/c8d4yvg1lzgo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/a159/live/235c9ef0-25bb-11f0-b26b-ab62c890638b.jpg",
+      "publishedAt": "2025-05-01T21:52:15Z",
+      "content": "Kaleigh Watterson\r\nPolls have closed in the Westminster by-election in Runcorn and Helsby on the same day as local elections in parts of England.\r\nThe by-election was triggered by the resignation of … [+4055 chars]"
+    },
+    {
+      "source": {
+        "id": "time",
+        "name": "Time"
+      },
+      "author": "Chad de Guzman",
+      "title": "Protests, Police, and Politics at Columbia University Take the National Spotlight Again: What to Know",
+      "description": "New York police intervened after pro-Palestinian demonstrators occupied the university’s main library Wednesday evening.",
+      "url": "https://time.com/7283786/columbia-university-protests-butler-library-police-arrests-politics-trump-explainer/",
+      "urlToImage": "https://api.time.com/wp-content/uploads/2025/05/protesters-butler-library-columbia.jpg?quality=85&w=1024&h=628&crop=1",
+      "publishedAt": "2025-05-08T07:15:00Z",
+      "content": "Columbia University has once again found itself at the epicenter of pro-Palestinian campus protests after an attempted takeover of its main library by demonstrators on Wednesday.\r\nNew York police ste… [+6100 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Programmablemutter.com"
+      },
+      "author": "Henry Farrell",
+      "title": "Brian Eno's Theory of Democracy",
+      "description": "Organizing and generating variety in politics",
+      "url": "https://www.programmablemutter.com/p/brian-enos-theory-of-democracy",
+      "urlToImage": "https://substackcdn.com/image/fetch/w_1200,h_600,c_fill,f_jpg,q_auto:good,fl_progressive:steep,g_auto/https%3A%2F%2Fsubstack-post-media.s3.amazonaws.com%2Fpublic%2Fimages%2Fd3fe93b6-fd36-4c63-88f9-55a434046baf_1200x796.jpeg",
+      "publishedAt": "2025-05-04T05:12:47Z",
+      "content": "[image by Brian Eno, from 77 Million Paintings. Eno says in this dialogue that he doesnt mind people using these images for non-commercial purposes]\r\nThis posts title is a little cheeky. Brian Eno do… [+22374 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "South Africa will defend sovereignty, ANC chair says amid US tensions",
+      "description": "The ANC chair's comments come after months of US tension over race relations and land law.",
+      "url": "https://www.bbc.com/news/articles/c5ylem5j081o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/84fb/live/4870caf0-2376-11f0-8c2e-77498b1ce297.jpg",
+      "publishedAt": "2025-04-27T16:56:44Z",
+      "content": "A senior figure from South Africa's ruling ANC party has defended his country's sovereignty amid growing tensions with the US over race relations and a new land law.\r\n\"We are a free country, we're a … [+1802 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "The Atlantic"
+      },
+      "author": "James Parker",
+      "title": "Return of the Shaman",
+      "description": "How visionary healers became a fixture of contemporary American culture and politics",
+      "url": "https://www.theatlantic.com/magazine/archive/2025/06/manvir-singh-shamanism-timeless-religion-review/682581/",
+      "urlToImage": "https://cdn.theatlantic.com/thumbor/ljpJHCEIYKQLWSsr7hdRfOXuerA=/0x43:2000x1085/1200x625/media/img/2025/05/Shamanism_Omnivore_16x9/original.jpg",
+      "publishedAt": "2025-05-17T12:00:00Z",
+      "content": "Manvir Singhs newShamanism: The Timeless Religion ranges widely, introducing us to all sorts of shamans and neo-shamans and proto-shamans. We meet the cigarette-loving tribal healers among the Mentaw… [+8173 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "This week proves Nigel Farage's PM ambition is not a wild notion",
+      "description": "The next General Election is miles away and parties can surge and sink, but this week's results show Farage has changed the race, writes Laura Kuenssberg.",
+      "url": "https://www.bbc.com/news/articles/cx20zgwve43o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/897d/live/2ba5e3b0-2759-11f0-8c66-ebf25fc2cfef.png",
+      "publishedAt": "2025-05-03T16:06:04Z",
+      "content": "In the first week of 2025, Nigel Farage told me his ultimate goal was to become prime minister. It stuck in my mind that he chose to add: \"I'm not joking.\"\r\nNobody in the two traditional main parties… [+6767 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "Scientific American"
+      },
+      "author": "Kim Samuel",
+      "title": "Loneliness Is Inflaming Our Bodies—And Our Politics",
+      "description": "Medical research shows that social isolation is a serious chronic stressor. You can say something similar about its impact on our political system",
+      "url": "https://www.scientificamerican.com/article/loneliness-is-inflaming-our-bodies-and-our-politics/",
+      "urlToImage": "https://static.scientificamerican.com/dam/m/3f40df4ebfb8b2c5/original/male-figure-inside-head.jpg?m=1747343980.641&w=1200",
+      "publishedAt": "2025-05-16T14:00:00Z",
+      "content": "Hannah Arendt has been on my mind a lot lately. The 20th-century German-Jewish political philosopher escaped the Nazi Holocaust, and won regard as one of the world’s greatest public intellectuals at … [+7242 chars]"
+    },
+    {
+      "source": {
+        "id": "buzzfeed",
+        "name": "Buzzfeed"
+      },
+      "author": "Leyla Mohammed",
+      "title": "Here’s How People Are Reacting To Ellen DeGeneres Sharing A Super Rare Glimpse Into Her And Portia De Rossi’s Life Outside The USA",
+      "description": "“Looks like a beautiful life you’re living away from the horror of USA politics.”View Entire Post ›",
+      "url": "https://www.buzzfeed.com/leylamohammed/ellen-degeneres-rare-glimpse-life-outside-usa",
+      "urlToImage": "https://img.buzzfeed.com/buzzfeed-static/static/2025-04/23/14/thumb/GFa6--DeO.jpg?crop=1246:652;4,0%26downsize=1250:*",
+      "publishedAt": "2025-04-23T14:38:33Z",
+      "content": "Im so glad you guys are out of this country, lucky you we are hurting over here, one person wrote. Looks like a beautiful life youre living away from the horror of USA politics, another user echoed.\r… [+248 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "How to follow the local elections on the BBC",
+      "description": "BBC News is on on hand to keep you up-to-date with the latest developments across all platforms.",
+      "url": "https://www.bbc.com/news/articles/cly1v9075vqo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/dac9/live/5a624c10-259d-11f0-8f57-b7237f6a66e6.png",
+      "publishedAt": "2025-04-30T16:48:32Z",
+      "content": "Elections are taking place in 23 councils on Thursday, alongside six mayoral races. Voters in the Runcorn and Helsby constituency will also elect their new MP.\r\nBBC News is on hand to keep you up-to-… [+1877 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "A turnaround victory made possible by Trump",
+      "description": "Mark Carney's party pull off an election win that once looked near-impossible, until the US president targeted Canada.",
+      "url": "https://www.bbc.com/news/articles/c5ypz7yx73wo",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/5887/live/a419a300-24a6-11f0-a9b9-8b651e7c5de9.jpg",
+      "publishedAt": "2025-04-29T04:29:20Z",
+      "content": "Anthony Zurcher\r\nMark Carney and the Liberal Party have claimed a remarkable victory in the Canadian election and it appears to have come with a big assist from Donald Trump.\r\nThe US president's cons… [+3855 chars]"
+    },
+    {
+      "source": {
+        "id": null,
+        "name": "BBC News"
+      },
+      "author": null,
+      "title": "Yungblud says he's thought about becoming a politician",
+      "description": "Since setting up his own festival to make tickets cheaper, the 27-year-old singer says he thinks he could make a difference elsewhere.",
+      "url": "https://www.bbc.com/news/articles/cg5v6530y40o",
+      "urlToImage": "https://ichef.bbci.co.uk/news/1024/branded_news/accf/live/87ac1f50-2e6e-11f0-b26b-ab62c890638b.jpg",
+      "publishedAt": "2025-05-11T14:22:54Z",
+      "content": "Yungblud, the chart-topping singer who set up his own festival, has said he has considered becoming a politician.\r\nThe 27-year-old artist - whose real name is Dominic Richard Harrison - said he wante… [+2049 chars]"
+    },
+        ],
+      },
+
+
+
+
+
+
+
+
+
+
+
+
+      
+
+
+
+      // Add other categories like cricket, politics, international similarly if you want
+    };
+
+    function bindData(articles) {
+      const container = document.getElementById("cardscontainer");
+      const template = document.getElementById("template-news-card");
+      container.innerHTML = "";
+
+      articles.forEach((article) => {
+        if (!article.urlToImage) return;
+
+        const clone = template.content.cloneNode(true);
+        clone.getElementById("news-img").src = article.urlToImage;
+        clone.getElementById("news-title").textContent = article.title;
+        clone.getElementById("news-desc").textContent = article.description;
+
+        const date = new Date(article.publishedAt).toLocaleString("en-US", {
+          timeZone: "Asia/Jakarta",
+        });
+        clone.getElementById("news-source").textContent = `${article.source.name} · ${date}`;
+
+        clone.querySelector(".card").addEventListener("click", () => {
+          window.open(article.url, "_blank");
+        });
+
+        container.appendChild(clone);
+      });
+    }
+
+    let curSelectedNav = null;
+    function onNavItemClick(id) {
+      if (!newsData[id]) {
+        alert("No news data available for this category");
+        return;
+      }
+      bindData(newsData[id].articles);
+
+      if (curSelectedNav) {
+        curSelectedNav.classList.remove("active");
+      }
+      curSelectedNav = document.getElementById(id);
+      curSelectedNav.classList.add("active");
+    }
+
+    document.getElementById("search-button").addEventListener("click", () => {
+      const query = document.getElementById("search-text").value.trim().toLowerCase();
+      if (!query) return;
+
+      // Search all articles in all categories for simplicity
+      let allArticles = [];
+      Object.values(newsData).forEach((cat) => {
+        allArticles = allArticles.concat(cat.articles);
+      });
+
+      // Filter articles by title or description containing the search query
+      const filtered = allArticles.filter(
+        (article) =>
+          article.title.toLowerCase().includes(query) ||
+          article.description.toLowerCase().includes(query)
+      );
+
+      if (filtered.length === 0) {
+        alert("No results found");
+        return;
+      }
+
+      bindData(filtered);
+
+      if (curSelectedNav) {
+        curSelectedNav.classList.remove("active");
+        curSelectedNav = null;
+      }
+    });
+
+    // Load default tab on page load (Technology)
+    window.onload = () => {
+      onNavItemClick("india");
+    };
+  </script>
 </body>
-
 </html>
